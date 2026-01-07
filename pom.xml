@@ -7,6 +7,11 @@
     <groupId>com.bmstu_bureau_1440</groupId>
     <artifactId>bmstu_bureau-1440</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>shared</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
