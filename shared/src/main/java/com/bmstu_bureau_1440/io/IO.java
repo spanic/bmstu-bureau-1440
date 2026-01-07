@@ -33,7 +33,7 @@ public class IO {
         }
     }
 
-    public static String displayMenu(IOperation[] operations) {
+    public static String displayMenu(IOperation... operations) {
         ConsolePrompt prompt = new ConsolePrompt(terminal);
         ListPromptBuilder builder = prompt.getPromptBuilder().createListPrompt();
 
@@ -85,6 +85,14 @@ public class IO {
             AttributedString greenText =
                     new AttributedString(message, AttributedStyle.BOLD.foreground(AttributedStyle.GREEN));
             terminal.writer().println(greenText.toAnsi(terminal));
+        }
+    }
+
+    public static void displayWarning(String message) {
+        if (message != null && !message.isBlank()) {
+            AttributedString orangeText =
+                    new AttributedString(message, AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW));
+            terminal.writer().println(orangeText.toAnsi(terminal));
         }
     }
 
