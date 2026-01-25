@@ -616,6 +616,8 @@ HAVING
     sum(transactions.amount) > (
         SELECT avg(amount)
         FROM transactions
+        WHERE
+            txn_type IN ('deposit', 'transfer_in')
     );
 
 -- =============================================================
@@ -628,7 +630,8 @@ FROM
     JOIN accounts ON clients.client_id = accounts.client_id
     JOIN transactions ON accounts.account_id = transactions.account_id
 WHERE
-    transactions.txn_date BETWEEN '2025-01-01 00:00:00' AND '2025-12-31 23:59:59'
+    transactions.txn_date >= '2025-01-01'
+    AND transactions.txn_date < '2026-01-01'
 GROUP BY
     clients.client_id
 ORDER BY transactions_sum DESC
