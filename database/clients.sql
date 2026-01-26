@@ -579,8 +579,7 @@ SELECT clients.*, COUNT(accounts.account_id) AS account_count
 FROM clients
     LEFT JOIN accounts ON clients.client_id = accounts.client_id
 GROUP BY
-    clients.client_id
-ORDER BY clients.client_id;
+    clients.client_id;
 
 /*
 ⚠️ Использовано SELECT clients.* для более короткой записи, но best practice – делать явное перечисление столбцов ради лучшего контроля вывода
@@ -659,9 +658,9 @@ WITH
 SELECT
     *,
     CASE
-        WHEN transactions_per_user.transactions_count = 0 THEN 'inactive'
-        WHEN transactions_per_user.transactions_count BETWEEN 1 AND 5  THEN 'low'
-        WHEN transactions_per_user.transactions_count BETWEEN 6 AND 20  THEN 'medium'
+        WHEN transactions_count = 0 THEN 'inactive'
+        WHEN transactions_count BETWEEN 1 AND 5  THEN 'low'
+        WHEN transactions_count BETWEEN 6 AND 20  THEN 'medium'
         ELSE 'high'
     END activity
 FROM transactions_per_user
