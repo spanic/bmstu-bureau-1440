@@ -12,6 +12,7 @@
     <modules>
         <module>shared</module>
         <module>zoo</module>
+        <module>banking-app</module>
     </modules>
 
     <properties>
