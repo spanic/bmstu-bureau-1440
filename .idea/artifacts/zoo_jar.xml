@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="zoo:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/zoo_jar</output-path>
+    <root id="archive" name="zoo.jar">
+      <element id="module-output" name="zoo" />
+      <element id="module-output" name="shared" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-builtins/3.30.6/jline-builtins-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-native/3.30.6/jline-native-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-style/3.30.6/jline-style-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-console-ui/3.30.6/jline-console-ui-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-reader/3.30.6/jline-reader-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline/3.30.6/jline-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-terminal/3.30.6/jline-terminal-3.30.6.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
