@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.race
     description varchar,
     base_health integer NOT NULL DEFAULT 0 CHECK (base_health >= 0),
     base_mana integer NOT NULL DEFAULT 0 CHECK (base_mana >= 0),
-    base_damage double precision NOT NULL DEFAULT 0.0,
+    base_damage double precision NOT NULL DEFAULT 0.0 CHECK (base_damage >= 0),
     base_strength integer NOT NULL DEFAULT 0 CHECK (base_strength >= 0),
     base_agility integer NOT NULL DEFAULT 0 CHECK (base_agility >= 0),
     base_intellect integer NOT NULL DEFAULT 0 CHECK (base_intellect >= 0)
@@ -124,8 +124,8 @@ CREATE TABLE IF NOT EXISTS public.heroes
     id serial PRIMARY KEY,
     name varchar(255) NOT NULL UNIQUE,
     sex varchar(10) NOT NULL CHECK (sex IN ('male', 'female')),
-    race integer NOT NULL REFERENCES public.race (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    profession integer REFERENCES public.profession (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    race integer NOT NULL REFERENCES public.race (id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    profession integer REFERENCES public.profession (id) ON UPDATE CASCADE ON DELETE RESTRICT,
     created_date timestamp without time zone NOT NULL,
     experience_points integer NOT NULL DEFAULT 0 CHECK (experience_points >= 0),
     gold integer NOT NULL DEFAULT 0 CHECK (gold >= 0),
@@ -199,7 +199,8 @@ CREATE TABLE IF NOT EXISTS public.heroes_weapons_slots
     hero_id integer NOT NULL REFERENCES public.heroes (id),
     weapon_id integer NOT NULL REFERENCES public.weapons (id),
     slot_id integer NOT NULL REFERENCES public.slots (id),
-    PRIMARY KEY (hero_id, weapon_id, slot_id)
+    PRIMARY KEY (hero_id, weapon_id, slot_id),
+    UNIQUE (hero_id, slot_id)
 );
 
 DROP TABLE IF EXISTS public.armor_slots CASCADE;
@@ -231,7 +232,8 @@ CREATE TABLE IF NOT EXISTS public.heroes_armor_slots
     hero_id integer NOT NULL REFERENCES public.heroes (id),
     armor_id integer NOT NULL REFERENCES public.armor (id),
     slot_id integer NOT NULL REFERENCES public.slots (id),
-    PRIMARY KEY (hero_id, slot_id, armor_id)
+    PRIMARY KEY (hero_id, slot_id, armor_id),
+    UNIQUE (hero_id, slot_id)
 );
 
 -- Inventory tables (purchased but not equipped items)
