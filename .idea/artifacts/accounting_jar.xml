@@ -1,0 +1,25 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="accounting:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/accounting_jar</output-path>
+    <root id="archive" name="accounting.jar">
+      <element id="module-output" name="accounting" />
+      <element id="module-output" name="shared" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-context/7.0.3/spring-context-7.0.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-aop/7.0.3/spring-aop-7.0.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-reader/3.30.6/jline-reader-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/micrometer/micrometer-observation/1.16.2/micrometer-observation-1.16.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/micrometer/micrometer-commons/1.16.2/micrometer-commons-1.16.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-builtins/3.30.6/jline-builtins-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-native/3.30.6/jline-native-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-terminal/3.30.6/jline-terminal-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-beans/7.0.3/spring-beans-7.0.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-expression/7.0.3/spring-expression-7.0.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline/3.30.6/jline-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-core/7.0.3/spring-core-7.0.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-style/3.30.6/jline-style-3.30.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jline/jline-console-ui/3.30.6/jline-console-ui-3.30.6.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
