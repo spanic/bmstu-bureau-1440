@@ -19,6 +19,8 @@ public class Application {
 
     public void run() {
         storage.getTransactions().add(new Transaction());
+        repository.exportToFile(FileType.YAML);
+        repository.importFromFile(FileType.YAML);
         repository.exportToFile(FileType.JSON);
         repository.importFromFile(FileType.JSON);
         repository.exportToFile(FileType.CSV);

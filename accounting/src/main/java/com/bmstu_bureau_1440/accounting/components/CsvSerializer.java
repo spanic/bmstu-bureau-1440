@@ -11,8 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+// TODO: think about replacing OpenCSV used here by Jackson
+
 @Component
-public class CsvSerializer implements Serializer {
+public class CsvSerializer {
 
     /**
      * Deserializes a CSV file into a list of objects of the specified class type.
@@ -22,7 +24,6 @@ public class CsvSerializer implements Serializer {
      * @return a list of deserialized objects
      * @throws Exception if an error occurs during reading or parsing
      */
-    @Override
     public <T> List<T> deserialize(@NonNull Path path, Class<T> clazz) throws Exception {
         try (var reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             return new CsvToBeanBuilder<T>(reader).withType(clazz).build().parse();
@@ -36,7 +37,6 @@ public class CsvSerializer implements Serializer {
      * @param path    the path to the CSV file to write to; must not be null
      * @throws Exception if an error occurs during writing or serialization
      */
-    @Override
     public <T> void serialize(List<T> objects, @NonNull Path path) throws Exception {
         try (var writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             StatefulBeanToCsv<Object> beanToCsv = new StatefulBeanToCsvBuilder<>(writer).build();

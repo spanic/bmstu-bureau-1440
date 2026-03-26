@@ -11,6 +11,10 @@
 
     <artifactId>accounting</artifactId>
 
+    <properties>
+        <jackson.version>3.1.0</jackson.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.bmstu_bureau_1440</groupId>
@@ -44,7 +48,12 @@
         <dependency>
             <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>3.1.0</version>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>tools.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 
