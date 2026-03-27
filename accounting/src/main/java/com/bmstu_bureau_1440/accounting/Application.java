@@ -1,9 +1,9 @@
 package com.bmstu_bureau_1440.accounting;
 
-import com.bmstu_bureau_1440.accounting.models.FileType;
-import com.bmstu_bureau_1440.accounting.models.Transaction;
+import com.bmstu_bureau_1440.accounting.io.Operation;
 import com.bmstu_bureau_1440.accounting.repositories.FileStorageRepository;
 import com.bmstu_bureau_1440.accounting.services.AnalyticsService;
+import com.bmstu_bureau_1440.shared.io.IO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,13 +18,21 @@ public class Application {
     private FileStorageRepository repository;
 
     public void run() {
-        storage.getTransactions().add(new Transaction());
-        repository.exportToFile(FileType.YAML);
-        repository.importFromFile(FileType.YAML);
-        repository.exportToFile(FileType.JSON);
-        repository.importFromFile(FileType.JSON);
-        repository.exportToFile(FileType.CSV);
-        repository.importFromFile(FileType.CSV);
+
+        while (true) {
+            var option = IO.displayMenu(Operation.values());
+
+            try {
+                if (Operation.EXIT.getOperation().equals(option)) {
+                    break;
+                }
+
+            } catch (Exception e) {
+                IO.displayError(e);
+            }
+
+        }
+
     }
 
 }

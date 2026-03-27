@@ -1,4 +1,4 @@
-package com.bmstu_bureau_1440.io;
+package com.bmstu_bureau_1440.shared.io;
 
 import org.jline.consoleui.prompt.ConsolePrompt;
 import org.jline.consoleui.prompt.PromptResultItemIF;

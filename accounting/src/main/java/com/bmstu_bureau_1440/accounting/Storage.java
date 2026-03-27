@@ -1,6 +1,6 @@
 package com.bmstu_bureau_1440.accounting;
 
-import com.bmstu_bureau_1440.accounting.models.Transaction;
+import com.bmstu_bureau_1440.accounting.models.Operation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NonNull;
@@ -15,10 +15,10 @@ public class Storage {
 
     @Getter
     @Setter
-    private List<Transaction> transactions;
+    private List<Operation> operations;
 
-    public Storage(@NonNull @JsonProperty("transactions") List<Transaction> transactions) {
-        this.transactions = transactions.isEmpty() ? new ArrayList<>() : transactions;
+    public Storage(@NonNull @JsonProperty("operations") List<Operation> operations) {
+        this.operations = operations.isEmpty() ? new ArrayList<>() : operations;
     }
 
 }

@@ -40,7 +40,7 @@ public class FileStorageRepository {
         try {
             StorageSerializer serializer = serializers.get(fileType);
             var restoredStorage = serializer.deserialize(exportPath);
-            storage.setTransactions(restoredStorage.getTransactions());
+            storage.setOperations(restoredStorage.getOperations());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
