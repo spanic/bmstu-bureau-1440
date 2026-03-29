@@ -13,6 +13,7 @@ public class AccountingTUI extends ToolkitApp {
 
     private final TabsWidget mainNavigationTabs = new TabsWidget();
     private final AccountsTableWidget accountsTable;
+    private final AccountDetailsWidget accountDetailsWidget = new AccountDetailsWidget();
 
     public AccountingTUI(Storage storage) {
         this.accountsTable = new AccountsTableWidget(storage);
@@ -53,6 +54,7 @@ public class AccountingTUI extends ToolkitApp {
     }
 
     private Element renderAccountDetails() {
-        return panel("Details", new AccountDetailsWidget(accountsTable.getSelectedObject()));
+        accountDetailsWidget.setAccount(accountsTable.getSelectedObject());
+        return panel("Details", accountDetailsWidget);
     }
 }
