@@ -17,13 +17,14 @@ import dev.tamboui.toolkit.element.RenderContext;
 import dev.tamboui.toolkit.element.Size;
 import dev.tamboui.toolkit.element.StyledElement;
 import dev.tamboui.widgets.form.FormState;
+import dev.tamboui.widgets.form.Validators;
 import dev.tamboui.widgets.paragraph.Paragraph;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-import static dev.tamboui.toolkit.Toolkit.textInput;
+import static dev.tamboui.toolkit.Toolkit.formField;
 
 public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
@@ -32,7 +33,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
     private static final Layout layout = Layout.vertical()
             .constraints(
                     Constraint.length(1), // ID
-                    Constraint.length(3), // Name (editable)
+                    Constraint.length(5), // Name (editable)
                     Constraint.length(1)  // Balance
             );
 
@@ -49,6 +50,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
         if (ObjectUtils.notEqual(account, currentBankAccount)) {
             currentBankAccount = account;
             form.setTextValue("name", ObjectUtils.isEmpty(account) ? StringUtils.EMPTY : account.getName());
+            form.clearValidationResult("name");
             form.textField("name").moveCursorToEnd();
         }
     }
@@ -77,13 +79,30 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
         List<Rect> nameFieldInnerAreas = innerRowLayout.split(areas.get(1));
 
-        Element nameField = textInput(form.textField("name"))
+        Element nameField = formField("", form.textField("name"))
+                .formState(form, "name")
                 .id("name-input")
                 .focusable()
+                .labelWidth(Size.ZERO.width())
+                .spacing(Size.ZERO.width())
                 .rounded()
                 .borderColor(Color.DARK_GRAY)
                 .focusedBorderColor(Color.MAGENTA)
-                .placeholder("Enter account name");
+                .placeholder("Enter account name")
+                .validate(
+                        Validators.required("Name cannot be empty"),
+                        Validators.minLength(3, "Too short")
+                )
+                .errorBorderColor(Color.RED)
+                .showInlineErrors(true)
+                .onSubmit(() -> {
+                    boolean isNameValid = form.validationResult("name").isValid();
+                    if (!isNameValid) {
+                        return;
+                    }
+                    String value = form.textValue("name");
+                    currentBankAccount.setName(value);
+                });
 
         frame.renderWidget(
                 Paragraph.from(Text.from(Line.from(Span.raw("Name: ").bold()))),
