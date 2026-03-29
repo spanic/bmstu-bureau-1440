@@ -119,4 +119,16 @@ public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
             return EventResult.UNHANDLED;
         }
     }
+
+    public BankAccount getSelectedObject() {
+        Integer index = accountsTableState.selected();
+        if (index == null) {
+            return null;
+        }
+        var accounts = storage.getAccounts();
+        if (index >= 0 && index < accounts.size()) {
+            return accounts.get(index);
+        }
+        return null;
+    }
 }

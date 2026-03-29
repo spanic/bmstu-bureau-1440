@@ -24,7 +24,6 @@ public class AccountingTUI extends ToolkitApp {
                 "Bank application",
                 mainNavigationTabs,
                 renderContent(mainNavigationTabs.getTabsState().selected()),
-                spacer(),
                 text("Press 'q' to quit").dim()
         )
                 .borderColor(Color.YELLOW)
@@ -34,10 +33,13 @@ public class AccountingTUI extends ToolkitApp {
     private Element renderContent(int currentTab) {
         switch (currentTab) {
             case 0 -> {
-                return renderAccounts();
+                return column(
+                        renderAccounts(),
+                        renderAccountDetails()
+                ).fill();
             }
             default -> {
-                return spacer().percent(0);
+                return spacer();
             }
         }
     }
@@ -46,6 +48,11 @@ public class AccountingTUI extends ToolkitApp {
         return panel("Accounts", accountsTable)
                 .id("accounts")
                 .focusable()
-                .focusedBorderColor(Color.MAGENTA);
+                .focusedBorderColor(Color.MAGENTA)
+                .fill();
+    }
+
+    private Element renderAccountDetails() {
+        return panel("Details", new AccountDetailsWidget(accountsTable.getSelectedObject()));
     }
 }
