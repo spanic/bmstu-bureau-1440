@@ -17,11 +17,8 @@ import dev.tamboui.toolkit.element.Element;
 import dev.tamboui.toolkit.element.RenderContext;
 import dev.tamboui.toolkit.element.Size;
 import dev.tamboui.toolkit.element.StyledElement;
-import dev.tamboui.widgets.form.FormState;
 import dev.tamboui.widgets.form.Validators;
 import dev.tamboui.widgets.paragraph.Paragraph;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -30,8 +27,6 @@ import static dev.tamboui.toolkit.Toolkit.formField;
 public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
     private final AccountingTuiController controller;
-
-    private static BankAccount currentBankAccount;
 
     private static final Layout layout = Layout.vertical()
             .constraints(
@@ -45,10 +40,6 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
             Constraint.fill() // Field value | input
     ).flex(Flex.CENTER);
 
-    private static final FormState form = FormState.builder()
-            .textField("name", "")
-            .build();
-
     public AccountDetailsWidget(AccountingTuiController controller) {
         this.controller = controller;
     }
@@ -56,7 +47,6 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
     @Override
     protected void renderContent(Frame frame, Rect area, RenderContext renderContext) {
         final BankAccount selectedBankAccount = controller.getSelectedBankAccount();
-        resetFormOnBankAccountUpdate(selectedBankAccount);
 
         List<Rect> areas = layout.split(area);
 
@@ -69,7 +59,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
         frame.renderWidget(
                 Paragraph.from(Text.from(Line.from(Span.raw(
                                 CharWidth.truncateWithEllipsis(
-                                        currentBankAccount.getId(),
+                                        selectedBankAccount.getId(),
                                         idInnerAreas.getLast().width(),
                                         CharWidth.TruncatePosition.END
                                 )
@@ -80,8 +70,8 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
         List<Rect> nameFieldInnerAreas = innerRowLayout.split(areas.get(1));
 
-        Element nameField = formField("", form.textField("name"))
-                .formState(form, "name")
+        Element nameField = formField("", controller.getForm().textField("name"))
+                .formState(controller.getForm(), "name")
                 .id("name-input")
                 .focusable()
                 .labelWidth(Size.ZERO.width())
@@ -97,12 +87,12 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
                 .errorBorderColor(Color.RED)
                 .showInlineErrors(true)
                 .onSubmit(() -> {
-                    boolean isNameValid = form.validationResult("name").isValid();
+                    boolean isNameValid = controller.getForm().validationResult("name").isValid();
                     if (!isNameValid) {
                         return;
                     }
-                    String value = form.textValue("name");
-                    currentBankAccount.setName(value);
+                    String value = controller.getForm().textValue("name");
+                    selectedBankAccount.setName(value);
                 });
 
         frame.renderWidget(
@@ -122,22 +112,11 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
                         Line.from(
                                 Span.raw("Balance: ").bold(),
                                 Span.raw("₽").yellow().bold(),
-                                Span.raw(currentBankAccount.getBalance().toString()).yellow().bold()
+                                Span.raw(selectedBankAccount.getBalance().toString()).yellow().bold()
                         )
                 )),
                 balanceInnerAreas.getLast()
         );
-    }
-
-    private static void resetFormOnBankAccountUpdate(BankAccount selectedBankAccount) {
-        if (ObjectUtils.notEqual(selectedBankAccount, currentBankAccount)) {
-            currentBankAccount = selectedBankAccount;
-
-            form.setTextValue("name", ObjectUtils.isEmpty(selectedBankAccount) ?
-                    StringUtils.EMPTY : selectedBankAccount.getName());
-            form.clearValidationResult("name");
-            form.textField("name").moveCursorToEnd();
-        }
     }
 
     @Override
