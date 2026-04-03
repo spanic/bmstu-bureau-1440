@@ -1,5 +1,6 @@
 package com.bmstu_bureau_1440.accounting.io;
 
+import com.bmstu_bureau_1440.accounting.io.controller.AccountingTuiController;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;
 import dev.tamboui.style.Style;
@@ -14,13 +15,14 @@ import dev.tamboui.widgets.block.Block;
 import dev.tamboui.widgets.block.BorderType;
 import dev.tamboui.widgets.block.Borders;
 import dev.tamboui.widgets.tabs.Tabs;
-import dev.tamboui.widgets.tabs.TabsState;
-import lombok.Getter;
 
 public class TabsWidget extends StyledElement<TabsWidget> {
 
-    @Getter
-    private final TabsState tabsState = new TabsState(0);
+    private final AccountingTuiController controller;
+
+    public TabsWidget(AccountingTuiController controller) {
+        this.controller = controller;
+    }
 
     @Override
     public String id() {
@@ -48,7 +50,7 @@ public class TabsWidget extends StyledElement<TabsWidget> {
                         .build())
                 .build();
 
-        frame.renderStatefulWidget(tabs, area, tabsState);
+        frame.renderStatefulWidget(tabs, area, controller.getMainNavigationTabsState());
     }
 
     @Override
@@ -58,10 +60,10 @@ public class TabsWidget extends StyledElement<TabsWidget> {
         }
 
         if (event.isRight()) {
-            tabsState.selectNext(3);
+            controller.getMainNavigationTabsState().selectNext(3);
             return EventResult.HANDLED;
         } else if (event.isLeft()) {
-            tabsState.selectPrevious(3);
+            controller.getMainNavigationTabsState().selectPrevious(3);
             return EventResult.HANDLED;
         } else {
             return EventResult.UNHANDLED;

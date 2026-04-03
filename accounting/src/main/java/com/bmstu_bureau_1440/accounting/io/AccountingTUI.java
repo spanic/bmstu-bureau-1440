@@ -1,6 +1,6 @@
 package com.bmstu_bureau_1440.accounting.io;
 
-import com.bmstu_bureau_1440.accounting.Storage;
+import com.bmstu_bureau_1440.accounting.io.controller.AccountingTuiController;
 import dev.tamboui.style.Color;
 import dev.tamboui.toolkit.app.ToolkitApp;
 import dev.tamboui.toolkit.element.Element;
@@ -11,28 +11,42 @@ import static dev.tamboui.toolkit.Toolkit.*;
 @Component
 public class AccountingTUI extends ToolkitApp {
 
-    private final TabsWidget mainNavigationTabs = new TabsWidget();
-    private final AccountsTableWidget accountsTable;
-    private final AccountDetailsWidget accountDetailsWidget = new AccountDetailsWidget();
+    private final AccountingTuiController controller;
 
-    public AccountingTUI(Storage storage) {
-        this.accountsTable = new AccountsTableWidget(storage);
+    private final TabsWidget mainNavigationTabs;
+    private final AccountsTableWidget accountsTable;
+    private final AccountDetailsWidget accountDetailsWidget;
+
+    public AccountingTUI(AccountingTuiController controller) {
+
+        this.controller = controller;
+
+        this.mainNavigationTabs = new TabsWidget(controller);
+        this.accountsTable = new AccountsTableWidget(controller);
+        this.accountDetailsWidget = new AccountDetailsWidget(controller);
+    }
+
+    @Override
+    protected void onStart() {
+        controller.selectNextAccount();
     }
 
     @Override
     protected Element render() {
         return panel(
                 "Bank application",
-                mainNavigationTabs,
-                renderContent(mainNavigationTabs.getTabsState().selected()),
+                renderMainTabsNavigation(),
+                renderContent(),
                 text("Press 'q' to quit").dim()
         )
                 .borderColor(Color.YELLOW)
                 .rounded();
     }
 
-    private Element renderContent(int currentTab) {
-        switch (currentTab) {
+    private Element renderContent() {
+        final Integer currentTabIdx = controller.getMainNavigationTabsState().selected();
+
+        switch (currentTabIdx) {
             case 0 -> {
                 return column(
                         renderAccounts(),
@@ -45,6 +59,10 @@ public class AccountingTUI extends ToolkitApp {
         }
     }
 
+    private Element renderMainTabsNavigation() {
+        return mainNavigationTabs;
+    }
+
     private Element renderAccounts() {
         return panel("Accounts", accountsTable)
                 .id("accounts")
@@ -54,7 +72,6 @@ public class AccountingTUI extends ToolkitApp {
     }
 
     private Element renderAccountDetails() {
-        accountDetailsWidget.setAccount(accountsTable.getSelectedObject());
         return panel("Details", accountDetailsWidget);
     }
 }

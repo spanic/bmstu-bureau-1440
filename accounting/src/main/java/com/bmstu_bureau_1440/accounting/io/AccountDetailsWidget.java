@@ -1,5 +1,6 @@
 package com.bmstu_bureau_1440.accounting.io;
 
+import com.bmstu_bureau_1440.accounting.io.controller.AccountingTuiController;
 import com.bmstu_bureau_1440.accounting.io.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import dev.tamboui.layout.Constraint;
@@ -28,6 +29,8 @@ import static dev.tamboui.toolkit.Toolkit.formField;
 
 public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
+    private final AccountingTuiController controller;
+
     private static BankAccount currentBankAccount;
 
     private static final Layout layout = Layout.vertical()
@@ -46,17 +49,15 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
             .textField("name", "")
             .build();
 
-    public void setAccount(BankAccount account) {
-        if (ObjectUtils.notEqual(account, currentBankAccount)) {
-            currentBankAccount = account;
-            form.setTextValue("name", ObjectUtils.isEmpty(account) ? StringUtils.EMPTY : account.getName());
-            form.clearValidationResult("name");
-            form.textField("name").moveCursorToEnd();
-        }
+    public AccountDetailsWidget(AccountingTuiController controller) {
+        this.controller = controller;
     }
 
     @Override
     protected void renderContent(Frame frame, Rect area, RenderContext renderContext) {
+        final BankAccount selectedBankAccount = controller.getSelectedBankAccount();
+        resetFormOnBankAccountUpdate(selectedBankAccount);
+
         List<Rect> areas = layout.split(area);
 
         List<Rect> idInnerAreas = innerRowLayout.split(areas.get(0));
@@ -126,6 +127,17 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
                 )),
                 balanceInnerAreas.getLast()
         );
+    }
+
+    private static void resetFormOnBankAccountUpdate(BankAccount selectedBankAccount) {
+        if (ObjectUtils.notEqual(selectedBankAccount, currentBankAccount)) {
+            currentBankAccount = selectedBankAccount;
+
+            form.setTextValue("name", ObjectUtils.isEmpty(selectedBankAccount) ?
+                    StringUtils.EMPTY : selectedBankAccount.getName());
+            form.clearValidationResult("name");
+            form.textField("name").moveCursorToEnd();
+        }
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.bmstu_bureau_1440.accounting.io;
 
-import com.bmstu_bureau_1440.accounting.Storage;
+import com.bmstu_bureau_1440.accounting.io.controller.AccountingTuiController;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Rect;
@@ -16,17 +16,16 @@ import dev.tamboui.tui.event.KeyEvent;
 import dev.tamboui.widgets.table.Cell;
 import dev.tamboui.widgets.table.Row;
 import dev.tamboui.widgets.table.Table;
-import dev.tamboui.widgets.table.TableState;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import static com.bmstu_bureau_1440.accounting.io.utils.TuiUtils.truncateRow;
+
 public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
 
-    @Getter
-    private final TableState accountsTableState = new TableState();
+    private final AccountingTuiController controller;
 
     record Column<T>(String name, Constraint constraint, Function<T, String> valueExtractor) {
     }
@@ -37,16 +36,14 @@ public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
             new Column<>("Balance (₽)", Constraint.percentage(20), account -> account.getBalance().toString())
     );
 
-    private final Storage storage;
 
-    public AccountsTableWidget(Storage storage) {
-        this.storage = storage;
-        accountsTableState.selectFirst();
+    public AccountsTableWidget(AccountingTuiController controller) {
+        this.controller = controller;
     }
 
     @Override
     protected void renderContent(Frame frame, Rect rect, RenderContext renderContext) {
-        var accounts = this.storage.getAccounts();
+        var accounts = controller.getAccounts();
 
         Row header = Row.from(columns.stream()
                         .map(Column::name)
@@ -67,7 +64,7 @@ public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
                     .map(column -> column.valueExtractor.apply(account))
                     .toArray(String[]::new);
 
-            final String[] truncatedValues = EllipsisHelper.truncateRow(
+            final String[] truncatedValues = truncateRow(
                     values,
                     constraints,
                     rect.width(),
@@ -89,12 +86,12 @@ public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
                 .highlightSymbol("▶ ")
                 .build();
 
-        frame.renderStatefulWidget(table, rect, accountsTableState);
+        frame.renderStatefulWidget(table, rect, controller.getAccountsTableState());
     }
 
     @Override
     public Size preferredSize(int availableWidth, int availableHeight, RenderContext context) {
-        int rowCount = storage.getAccounts().size();
+        int rowCount = controller.getAccounts().size();
         int height = rowCount + 1 /* Header row */;
         if (availableHeight > 0) {
             height = Math.min(height, availableHeight);
@@ -110,25 +107,13 @@ public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
         }
 
         if (event.isUp()) {
-            accountsTableState.selectPrevious();
+            controller.selectPreviousAccount();
             return EventResult.HANDLED;
         } else if (event.isDown()) {
-            accountsTableState.selectNext(storage.getAccounts().size());
+            controller.selectNextAccount();
             return EventResult.HANDLED;
         } else {
             return EventResult.UNHANDLED;
         }
-    }
-
-    public BankAccount getSelectedObject() {
-        Integer index = accountsTableState.selected();
-        if (index == null) {
-            return null;
-        }
-        var accounts = storage.getAccounts();
-        if (index >= 0 && index < accounts.size()) {
-            return accounts.get(index);
-        }
-        return null;
     }
 }
