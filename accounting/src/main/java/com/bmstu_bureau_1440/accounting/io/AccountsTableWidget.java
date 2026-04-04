@@ -5,6 +5,7 @@ import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;
+import dev.tamboui.style.Overflow;
 import dev.tamboui.style.Style;
 import dev.tamboui.terminal.Frame;
 import dev.tamboui.text.CharWidth;
@@ -22,6 +23,8 @@ import java.util.List;
 import java.util.function.Function;
 
 import static com.bmstu_bureau_1440.accounting.io.utils.TuiUtils.truncateRow;
+import static dev.tamboui.toolkit.Toolkit.dialog;
+import static dev.tamboui.toolkit.Toolkit.text;
 
 public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
 
@@ -87,6 +90,26 @@ public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
                 .build();
 
         frame.renderStatefulWidget(table, rect, controller.getAccountsTableState());
+
+        if (controller.getRemoveAccountDialogVisible()) {
+
+            var inputDialog = dialog("Are you sure?",
+                    text("This action cannot be undone! Do you want to continue?").style(Style.EMPTY.fg(Color.RED)).overflow(Overflow.WRAP_WORD),
+                    text("[Enter] Confirm  [Esc] Cancel").style(Style.EMPTY.fg(Color.RED)).dim()
+            ).rounded()
+                    .doubleBorder()
+                    .minWidth(frame.width() / 2)
+                    .length(7)
+                    .borderColor(Color.RED)
+                    .onConfirm(controller::removeAccount)
+                    .onCancel(() -> {
+                        controller.setRemoveAccountDialogVisible(false);
+                    });
+
+            renderContext.renderChild(inputDialog, frame, frame.area());
+
+        }
+
     }
 
     @Override
@@ -111,6 +134,9 @@ public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
             return EventResult.HANDLED;
         } else if (event.isDown()) {
             controller.selectNextAccount();
+            return EventResult.HANDLED;
+        } else if (event.isChar('d')) {
+            controller.setRemoveAccountDialogVisible(true);
             return EventResult.HANDLED;
         } else {
             return EventResult.UNHANDLED;
