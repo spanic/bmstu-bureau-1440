@@ -138,6 +138,9 @@ public class AccountsTableWidget extends StyledElement<AccountsTableWidget> {
         } else if (event.isChar('d')) {
             controller.setRemoveAccountDialogVisible(true);
             return EventResult.HANDLED;
+        } else if (event.isChar('c')) {
+            controller.focusOnEmptyAccountDetails();
+            return EventResult.HANDLED;
         } else {
             return EventResult.UNHANDLED;
         }

@@ -13,6 +13,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -39,6 +40,7 @@ public class AccountingTuiController {
     @Getter
     private final FormState form = FormState.builder()
             .textField("name", "")
+            .textField("balance", "0")
             .build();
 
     // Queries
@@ -65,7 +67,31 @@ public class AccountingTuiController {
         accountsTableState.clearSelection();
         selectedBankAccount = null;
         updateEditAccountForm();
-        setRemoveAccountDialogVisible(false);
+    }
+
+    public void createOrUpdateAccount() {
+        boolean isNameValid = getForm().validationResult("name").isValid();
+        boolean isBalanceValid = getForm().validationResult("balance").isValid();
+
+        if (!isNameValid || !isBalanceValid) {
+            return;
+        }
+
+        String name = getForm().textValue("name");
+        BigDecimal balance = new BigDecimal(getForm().textValue("balance"));
+
+        if (ObjectUtils.isNotEmpty(selectedBankAccount)) {
+            selectedBankAccount.setName(name);
+            selectedBankAccount.setBalance(balance);
+        } else {
+            accountsService.addNewBankAccount(name, balance);
+            accountsTableState.selectLast(storage.getAccounts().size());
+            setSelectedBankAccountByIdx(accountsTableState.selected());
+        }
+    }
+
+    public void focusOnEmptyAccountDetails() {
+        clearAccountSelection();
     }
 
     public void removeAccount() {
@@ -76,6 +102,7 @@ public class AccountingTuiController {
         if (accountsTableState.selected() == storage.getAccounts().size()) {
             if (storage.getAccounts().isEmpty()) {
                 clearAccountSelection();
+                setRemoveAccountDialogVisible(false);
             } else {
                 selectPreviousAccount();
             }
@@ -95,9 +122,12 @@ public class AccountingTuiController {
     }
 
     private void updateEditAccountForm() {
-        form.setTextValue("name", ObjectUtils.isEmpty(selectedBankAccount) ?
+        form.setTextValue("name", selectedBankAccount == null ?
                 StringUtils.EMPTY : selectedBankAccount.getName());
-        form.clearValidationResult("name");
         form.textField("name").moveCursorToEnd();
+
+        form.setTextValue("balance", selectedBankAccount == null ?
+                "0" : selectedBankAccount.getBalance().toString());
+        form.textField("balance").moveCursorToEnd();
     }
 }
