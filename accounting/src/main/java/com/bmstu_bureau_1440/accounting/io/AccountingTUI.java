@@ -1,6 +1,8 @@
 package com.bmstu_bureau_1440.accounting.io;
 
 import com.bmstu_bureau_1440.accounting.io.controller.AccountingTuiController;
+import com.bmstu_bureau_1440.accounting.io.controller.AccountsTuiController;
+import com.bmstu_bureau_1440.accounting.io.controller.CategoriesTuiController;
 import dev.tamboui.style.Color;
 import dev.tamboui.toolkit.app.ToolkitApp;
 import dev.tamboui.toolkit.element.Element;
@@ -12,23 +14,33 @@ import static dev.tamboui.toolkit.Toolkit.*;
 public class AccountingTUI extends ToolkitApp {
 
     private final AccountingTuiController controller;
+    private final AccountsTuiController accountsController;
+    private final CategoriesTuiController categoriesController;
 
     private final TabsWidget mainNavigationTabs;
     private final AccountsTableWidget accountsTable;
     private final AccountDetailsWidget accountDetailsWidget;
+    private final CategoriesTableWidget categoriesTable;
 
-    public AccountingTUI(AccountingTuiController controller) {
-
+    public AccountingTUI(AccountingTuiController controller, AccountsTuiController accountsController, CategoriesTuiController categoriesController) {
         this.controller = controller;
+        this.accountsController = accountsController;
+        this.categoriesController = categoriesController;
+
+        // TODO: seems like it's also a good option to use DI here
 
         this.mainNavigationTabs = new TabsWidget(controller);
-        this.accountsTable = new AccountsTableWidget(controller);
-        this.accountDetailsWidget = new AccountDetailsWidget(controller);
+
+        this.accountsTable = new AccountsTableWidget(accountsController);
+        this.accountDetailsWidget = new AccountDetailsWidget(accountsController);
+
+        this.categoriesTable = new CategoriesTableWidget(categoriesController);
     }
 
     @Override
     protected void onStart() {
-        controller.selectNextAccount();
+        accountsController.selectNextAccount();
+        categoriesController.selectNextCategory();
     }
 
     @Override
@@ -53,6 +65,12 @@ public class AccountingTUI extends ToolkitApp {
                         renderAccountDetails()
                 ).fill();
             }
+            case 2 -> {
+                return column(
+                        renderCategories(),
+                        renderCategoryDetails()
+                ).fill();
+            }
             default -> {
                 return spacer();
             }
@@ -71,7 +89,19 @@ public class AccountingTUI extends ToolkitApp {
                 .fill();
     }
 
+    private Element renderCategories() {
+        return panel("Categories", categoriesTable)
+                .id("categories")
+                .focusable()
+                .focusedBorderColor(Color.MAGENTA)
+                .fill();
+    }
+
     private Element renderAccountDetails() {
         return panel("Details", accountDetailsWidget);
+    }
+
+    private Element renderCategoryDetails() {
+        return panel("Details");
     }
 }

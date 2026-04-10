@@ -1,6 +1,6 @@
 package com.bmstu_bureau_1440.accounting.io;
 
-import com.bmstu_bureau_1440.accounting.io.controller.AccountingTuiController;
+import com.bmstu_bureau_1440.accounting.io.controller.AccountsTuiController;
 import com.bmstu_bureau_1440.accounting.io.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import dev.tamboui.layout.Constraint;
@@ -26,7 +26,7 @@ import static dev.tamboui.toolkit.Toolkit.formField;
 
 public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
-    private final AccountingTuiController controller;
+    private final AccountsTuiController controller;
 
     private static final Layout layout = Layout.vertical()
             .constraints(
@@ -40,7 +40,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
             Constraint.fill() // Field value | input
     ).flex(Flex.CENTER);
 
-    public AccountDetailsWidget(AccountingTuiController controller) {
+    public AccountDetailsWidget(AccountsTuiController controller) {
         this.controller = controller;
     }
 

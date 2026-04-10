@@ -33,7 +33,7 @@ public class CsvStorageSerializer implements StorageSerializer {
                 Operation.class
         );
 
-        return new Storage(operations, null); // TODO: replace it by the actual result of deserialization
+        return new Storage(operations, null, null); // TODO: replace it by the actual result of deserialization
     }
 
     @Override

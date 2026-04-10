@@ -1,0 +1,74 @@
+package com.bmstu_bureau_1440.accounting.io;
+
+import com.bmstu_bureau_1440.accounting.io.controller.CategoriesTuiController;
+import com.bmstu_bureau_1440.accounting.models.Category;
+import dev.tamboui.layout.Constraint;
+import dev.tamboui.layout.Rect;
+import dev.tamboui.terminal.Frame;
+import dev.tamboui.toolkit.element.RenderContext;
+import dev.tamboui.toolkit.event.EventResult;
+import dev.tamboui.tui.event.KeyEvent;
+import dev.tamboui.widgets.table.TableState;
+
+import java.util.List;
+import java.util.function.Function;
+
+public class CategoriesTableWidget extends AbstractTableWidget<Category, CategoriesTuiController> {
+
+    public CategoriesTableWidget(CategoriesTuiController controller) {
+        super(controller);
+    }
+
+    @Override
+    protected Function<CategoriesTuiController, TableState> getStateProvider() {
+        return CategoriesTuiController::getCategoriesTableState;
+    }
+
+    @Override
+    protected List<Column<Category>> getColumns() {
+        return List.of(
+                new Column<>("ID", Constraint.percentage(40), Category::getId),
+                new Column<>("Type", Constraint.percentage(20), category -> category.getType().toString()),
+                new Column<>("Name", Constraint.fill(), Category::getName)
+        );
+    }
+
+    @Override
+    protected Function<CategoriesTuiController, List<Category>> getDataProvider() {
+        return CategoriesTuiController::getCategories;
+    }
+
+    @Override
+    protected void renderContent(Frame frame, Rect rect, RenderContext renderContext) {
+        super.renderContent(frame, rect, renderContext);
+
+        if (controller.getRemoveCategoryDialogVisible()) {
+            renderContext.renderChild(
+                    new ConfirmationDialogWidget(controller::removeCategory, () -> {
+                        controller.setRemoveCategoryDialogVisible(false);
+                    }),
+                    frame, rect
+            );
+        }
+    }
+
+    @Override
+    public EventResult handleKeyEvent(KeyEvent event, boolean focused) {
+        if (!focused) {
+            return EventResult.UNHANDLED;
+        }
+
+        if (event.isUp()) {
+            controller.selectPreviousCategory();
+            return EventResult.HANDLED;
+        } else if (event.isDown()) {
+            controller.selectNextCategory();
+            return EventResult.HANDLED;
+        } else if (event.isChar('d')) {
+            controller.setRemoveCategoryDialogVisible(true);
+            return EventResult.HANDLED;
+        } else {
+            return EventResult.UNHANDLED;
+        }
+    }
+}

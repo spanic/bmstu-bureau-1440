@@ -5,6 +5,7 @@ import dev.tamboui.layout.Layout;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.text.CharWidth;
 import dev.tamboui.toolkit.element.Size;
+import dev.tamboui.widgets.table.TableState;
 
 import java.util.List;
 
@@ -67,5 +68,10 @@ public class TuiUtils {
 
         // Can't determine — fill available space
         return Size.UNKNOWN;
+    }
+
+    public static <T> T getSelectedObject(TableState tableState, List<T> data) {
+        final var selectedIdx = tableState.selected();
+        return selectedIdx >= 0 && selectedIdx < data.size() ? data.get(selectedIdx) : null;
     }
 }

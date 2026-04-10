@@ -1,12 +1,14 @@
 package com.bmstu_bureau_1440.accounting.models;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
-@RequiredArgsConstructor
+@EqualsAndHashCode
+@AllArgsConstructor
 public class Category {
 
     @Getter
