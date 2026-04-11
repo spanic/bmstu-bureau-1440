@@ -1,6 +1,6 @@
-package com.bmstu_bureau_1440.accounting.io;
+package com.bmstu_bureau_1440.accounting.io.app.view;
 
-import com.bmstu_bureau_1440.accounting.io.controller.AccountingTuiController;
+import com.bmstu_bureau_1440.accounting.io.app.controller.AccountingTuiController;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;
 import dev.tamboui.style.Style;

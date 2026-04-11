@@ -1,4 +1,4 @@
-package com.bmstu_bureau_1440.accounting.io.controller;
+package com.bmstu_bureau_1440.accounting.io.app.controller;
 
 import dev.tamboui.widgets.tabs.TabsState;
 import lombok.Getter;

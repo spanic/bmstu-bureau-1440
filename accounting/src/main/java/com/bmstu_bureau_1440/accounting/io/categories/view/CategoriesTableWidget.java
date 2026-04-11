@@ -1,6 +1,9 @@
-package com.bmstu_bureau_1440.accounting.io;
+package com.bmstu_bureau_1440.accounting.io.categories.view;
 
-import com.bmstu_bureau_1440.accounting.io.controller.CategoriesTuiController;
+import com.bmstu_bureau_1440.accounting.io.categories.controller.CategoriesTuiController;
+import com.bmstu_bureau_1440.accounting.io.common.Column;
+import com.bmstu_bureau_1440.accounting.io.common.widgets.AbstractTableWidget;
+import com.bmstu_bureau_1440.accounting.io.common.widgets.ConfirmationDialogWidget;
 import com.bmstu_bureau_1440.accounting.models.Category;
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Rect;
@@ -66,6 +69,9 @@ public class CategoriesTableWidget extends AbstractTableWidget<Category, Categor
             return EventResult.HANDLED;
         } else if (event.isChar('d')) {
             controller.setRemoveCategoryDialogVisible(true);
+            return EventResult.HANDLED;
+        } else if (event.isChar('c')) {
+            controller.clearCategorySelection();
             return EventResult.HANDLED;
         } else {
             return EventResult.UNHANDLED;

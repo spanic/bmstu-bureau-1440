@@ -1,4 +1,4 @@
-package com.bmstu_bureau_1440.accounting.io.utils;
+package com.bmstu_bureau_1440.accounting.io.common.utils;
 
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Layout;

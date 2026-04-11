@@ -1,8 +1,13 @@
 package com.bmstu_bureau_1440.accounting.io;
 
-import com.bmstu_bureau_1440.accounting.io.controller.AccountingTuiController;
-import com.bmstu_bureau_1440.accounting.io.controller.AccountsTuiController;
-import com.bmstu_bureau_1440.accounting.io.controller.CategoriesTuiController;
+import com.bmstu_bureau_1440.accounting.io.accounts.controller.AccountsTuiController;
+import com.bmstu_bureau_1440.accounting.io.accounts.view.AccountDetailsWidget;
+import com.bmstu_bureau_1440.accounting.io.accounts.view.AccountsTableWidget;
+import com.bmstu_bureau_1440.accounting.io.app.controller.AccountingTuiController;
+import com.bmstu_bureau_1440.accounting.io.app.view.TabsWidget;
+import com.bmstu_bureau_1440.accounting.io.categories.controller.CategoriesTuiController;
+import com.bmstu_bureau_1440.accounting.io.categories.view.CategoriesTableWidget;
+import com.bmstu_bureau_1440.accounting.io.categories.view.CategoryDetailsWidget;
 import dev.tamboui.style.Color;
 import dev.tamboui.toolkit.app.ToolkitApp;
 import dev.tamboui.toolkit.element.Element;
@@ -16,13 +21,16 @@ public class AccountingTUI extends ToolkitApp {
     private final AccountingTuiController controller;
     private final AccountsTuiController accountsController;
     private final CategoriesTuiController categoriesController;
+    private final CategoryDetailsWidget categoryDetailsWidget;
 
     private final TabsWidget mainNavigationTabs;
     private final AccountsTableWidget accountsTable;
     private final AccountDetailsWidget accountDetailsWidget;
     private final CategoriesTableWidget categoriesTable;
 
-    public AccountingTUI(AccountingTuiController controller, AccountsTuiController accountsController, CategoriesTuiController categoriesController) {
+    public AccountingTUI(AccountingTuiController controller,
+                         AccountsTuiController accountsController,
+                         CategoriesTuiController categoriesController) {
         this.controller = controller;
         this.accountsController = accountsController;
         this.categoriesController = categoriesController;
@@ -35,6 +43,7 @@ public class AccountingTUI extends ToolkitApp {
         this.accountDetailsWidget = new AccountDetailsWidget(accountsController);
 
         this.categoriesTable = new CategoriesTableWidget(categoriesController);
+        this.categoryDetailsWidget = new CategoryDetailsWidget(categoriesController);
     }
 
     @Override
@@ -102,6 +111,6 @@ public class AccountingTUI extends ToolkitApp {
     }
 
     private Element renderCategoryDetails() {
-        return panel("Details");
+        return panel("Details", categoryDetailsWidget);
     }
 }

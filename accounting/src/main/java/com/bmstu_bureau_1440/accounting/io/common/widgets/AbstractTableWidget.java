@@ -1,5 +1,6 @@
-package com.bmstu_bureau_1440.accounting.io;
+package com.bmstu_bureau_1440.accounting.io.common.widgets;
 
+import com.bmstu_bureau_1440.accounting.io.common.Column;
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;
@@ -18,14 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.bmstu_bureau_1440.accounting.io.utils.TuiUtils.truncateRow;
+import static com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils.truncateRow;
 
 public abstract class AbstractTableWidget<T, K> extends StyledElement<AbstractTableWidget<T, K>> {
 
     protected final K controller;
-
-    protected record Column<T>(String name, Constraint constraint, Function<T, String> valueExtractor) {
-    }
 
     protected List<Column<T>> columns;
 
@@ -56,7 +54,7 @@ public abstract class AbstractTableWidget<T, K> extends StyledElement<AbstractTa
 
         for (int i = 0; i < data.size(); i++) {
             var object = data.get(i);
-            final var values = columns.stream().map(column -> column.valueExtractor.apply(object)).toArray(String[]::new);
+            final var values = columns.stream().map(column -> column.valueExtractor().apply(object)).toArray(String[]::new);
             final String[] truncatedValues = truncateRow(values, constraints, rect.width(), 4, 1, CharWidth.TruncatePosition.MIDDLE);
 
             Row row = Row.from(truncatedValues).style(i % 2 == 0 ? Style.EMPTY : Style.EMPTY.bg(Color.indexed(236)));

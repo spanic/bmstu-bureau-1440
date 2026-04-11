@@ -1,6 +1,9 @@
-package com.bmstu_bureau_1440.accounting.io;
+package com.bmstu_bureau_1440.accounting.io.accounts.view;
 
-import com.bmstu_bureau_1440.accounting.io.controller.AccountsTuiController;
+import com.bmstu_bureau_1440.accounting.io.accounts.controller.AccountsTuiController;
+import com.bmstu_bureau_1440.accounting.io.common.Column;
+import com.bmstu_bureau_1440.accounting.io.common.widgets.AbstractTableWidget;
+import com.bmstu_bureau_1440.accounting.io.common.widgets.ConfirmationDialogWidget;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Rect;
@@ -68,7 +71,7 @@ public class AccountsTableWidget extends AbstractTableWidget<BankAccount, Accoun
             controller.setRemoveAccountDialogVisible(true);
             return EventResult.HANDLED;
         } else if (event.isChar('c')) {
-            controller.focusOnEmptyAccountDetails();
+            controller.clearAccountSelection();
             return EventResult.HANDLED;
         } else {
             return EventResult.UNHANDLED;

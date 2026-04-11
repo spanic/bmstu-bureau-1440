@@ -1,7 +1,8 @@
-package com.bmstu_bureau_1440.accounting.io.controller;
+package com.bmstu_bureau_1440.accounting.io.accounts.controller;
 
 import com.bmstu_bureau_1440.accounting.Storage;
-import com.bmstu_bureau_1440.accounting.io.utils.TuiUtils;
+import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
+import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import com.bmstu_bureau_1440.accounting.services.AccountOperationsService;
 import dev.tamboui.widgets.form.FormState;
@@ -36,8 +37,8 @@ public class AccountsTuiController {
 
     @Getter
     private final FormState form = FormState.builder()
-            .textField("name", "")
-            .textField("balance", "0")
+            .textField(InputFields.ACCOUNT_NAME.getFieldName(), "")
+            .textField(InputFields.ACCOUNT_BALANCE.getFieldName(), "0")
             .build();
 
     // Queries
@@ -67,15 +68,15 @@ public class AccountsTuiController {
     }
 
     public void createOrUpdateAccount() {
-        boolean isNameValid = getForm().validationResult("name").isValid();
-        boolean isBalanceValid = getForm().validationResult("balance").isValid();
+        boolean isNameValid = getForm().validationResult(InputFields.ACCOUNT_NAME.getFieldName()).isValid();
+        boolean isBalanceValid = getForm().validationResult(InputFields.ACCOUNT_BALANCE.getFieldName()).isValid();
 
         if (!isNameValid || !isBalanceValid) {
             return;
         }
 
-        String name = getForm().textValue("name");
-        BigDecimal balance = new BigDecimal(getForm().textValue("balance"));
+        String name = getForm().textValue(InputFields.ACCOUNT_NAME.getFieldName());
+        BigDecimal balance = new BigDecimal(getForm().textValue(InputFields.ACCOUNT_BALANCE.getFieldName()));
 
         if (ObjectUtils.isNotEmpty(selectedBankAccount)) {
             selectedBankAccount.setName(name);
@@ -87,10 +88,6 @@ public class AccountsTuiController {
         }
     }
 
-    public void focusOnEmptyAccountDetails() {
-        clearAccountSelection();
-    }
-
     public void removeAccount() {
         accountsService.deleteAccount(selectedBankAccount);
 
@@ -99,7 +96,6 @@ public class AccountsTuiController {
         if (accountsTableState.selected() == storage.getAccounts().size()) {
             if (storage.getAccounts().isEmpty()) {
                 clearAccountSelection();
-                setRemoveAccountDialogVisible(false);
             } else {
                 selectPreviousAccount();
             }
@@ -111,13 +107,13 @@ public class AccountsTuiController {
     }
 
     private void updateEditAccountForm() {
-        form.setTextValue("name", selectedBankAccount == null ?
+        form.setTextValue(InputFields.ACCOUNT_NAME.getFieldName(), selectedBankAccount == null ?
                 StringUtils.EMPTY : selectedBankAccount.getName());
-        form.textField("name").moveCursorToEnd();
+        form.textField(InputFields.ACCOUNT_NAME.getFieldName()).moveCursorToEnd();
 
-        form.setTextValue("balance", selectedBankAccount == null ?
+        form.setTextValue(InputFields.ACCOUNT_BALANCE.getFieldName(), selectedBankAccount == null ?
                 "0" : selectedBankAccount.getBalance().toString());
-        form.textField("balance").moveCursorToEnd();
+        form.textField(InputFields.ACCOUNT_BALANCE.getFieldName()).moveCursorToEnd();
     }
 
 }

@@ -1,7 +1,8 @@
-package com.bmstu_bureau_1440.accounting.io;
+package com.bmstu_bureau_1440.accounting.io.accounts.view;
 
-import com.bmstu_bureau_1440.accounting.io.controller.AccountsTuiController;
-import com.bmstu_bureau_1440.accounting.io.utils.TuiUtils;
+import com.bmstu_bureau_1440.accounting.io.accounts.controller.AccountsTuiController;
+import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
+import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Flex;
@@ -12,18 +13,19 @@ import dev.tamboui.terminal.Frame;
 import dev.tamboui.text.CharWidth;
 import dev.tamboui.text.Line;
 import dev.tamboui.text.Span;
-import dev.tamboui.text.Text;
 import dev.tamboui.toolkit.element.RenderContext;
 import dev.tamboui.toolkit.element.Size;
 import dev.tamboui.toolkit.element.StyledElement;
 import dev.tamboui.toolkit.elements.FormFieldElement;
 import dev.tamboui.widgets.form.Validators;
 import dev.tamboui.widgets.paragraph.Paragraph;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static dev.tamboui.toolkit.Toolkit.formField;
 
+@RequiredArgsConstructor
 public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
     private final AccountsTuiController controller;
@@ -40,10 +42,6 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
             Constraint.fill() // Field value | input
     ).flex(Flex.CENTER);
 
-    public AccountDetailsWidget(AccountsTuiController controller) {
-        this.controller = controller;
-    }
-
     @Override
     protected void renderContent(Frame frame, Rect area, RenderContext renderContext) {
         final BankAccount selectedBankAccount = controller.getSelectedBankAccount();
@@ -53,7 +51,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
         List<Rect> idFieldInnerAreas = innerRowLayout.split(areas.get(0));
 
         frame.renderWidget(
-                Paragraph.from(Text.from(Line.from(Span.raw("ID: ").bold()))),
+                Paragraph.from(Span.raw("ID: ").bold()),
                 idFieldInnerAreas.getFirst()
         );
 
@@ -72,9 +70,14 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
         List<Rect> nameFieldInnerAreas = innerRowLayout.split(areas.get(1));
 
-        FormFieldElement nameField = formField("", controller.getForm().textField("name"))
-                .formState(controller.getForm(), "name")
-                .id("name-input")
+        frame.renderWidget(
+                Paragraph.from(Span.raw("Name: ").bold()),
+                nameFieldInnerAreas.getFirst()
+        );
+
+        FormFieldElement nameField = formField("", controller.getForm().textField(InputFields.ACCOUNT_NAME.getFieldName()))
+                .formState(controller.getForm(), InputFields.ACCOUNT_NAME.getFieldName())
+                .id(InputFields.ACCOUNT_NAME.getFieldId())
                 .focusable()
                 .labelWidth(Size.ZERO.width())
                 .spacing(Size.ZERO.width())
@@ -92,16 +95,12 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
         nameField.validateField();
 
-        frame.renderWidget(
-                Paragraph.from(Text.from(Line.from(Span.raw("Name: ").bold()))),
-                nameFieldInnerAreas.getFirst()
-        );
         renderContext.renderChild(nameField, frame, nameFieldInnerAreas.get(1));
 
         List<Rect> balanceInnerAreas = innerRowLayout.split(areas.get(2));
 
         frame.renderWidget(
-                Paragraph.from(Text.from(Line.from(Span.raw("Balance: ").bold()))),
+                Paragraph.from(Span.raw("Balance: ").bold()),
                 balanceInnerAreas.getFirst()
         );
 
@@ -119,9 +118,9 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
         } else {
 
-            FormFieldElement balanceField = formField("", controller.getForm().textField("balance"))
-                    .formState(controller.getForm(), "balance")
-                    .id("balance-input")
+            FormFieldElement balanceField = formField("", controller.getForm().textField(InputFields.ACCOUNT_BALANCE.getFieldName()))
+                    .formState(controller.getForm(), InputFields.ACCOUNT_BALANCE.getFieldName())
+                    .id(InputFields.ACCOUNT_BALANCE.getFieldId())
                     .focusable()
                     .labelWidth(Size.ZERO.width())
                     .spacing(Size.ZERO.width())

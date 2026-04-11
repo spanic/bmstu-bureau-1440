@@ -1,4 +1,4 @@
-package com.bmstu_bureau_1440.accounting.io;
+package com.bmstu_bureau_1440.accounting.io.common.widgets;
 
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;
