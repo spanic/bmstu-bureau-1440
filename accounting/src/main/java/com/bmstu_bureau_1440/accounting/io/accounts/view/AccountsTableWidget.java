@@ -68,7 +68,7 @@ public class AccountsTableWidget extends AbstractTableWidget<BankAccount, Accoun
             controller.selectNextAccount();
             return EventResult.HANDLED;
         } else if (event.isChar('d')) {
-            controller.setRemoveAccountDialogVisible(true);
+            controller.showDeleteConfirmationPopup();
             return EventResult.HANDLED;
         } else if (event.isChar('c')) {
             controller.clearAccountSelection();

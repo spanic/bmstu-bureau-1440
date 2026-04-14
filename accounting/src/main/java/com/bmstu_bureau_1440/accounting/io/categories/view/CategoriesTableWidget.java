@@ -68,7 +68,7 @@ public class CategoriesTableWidget extends AbstractTableWidget<Category, Categor
             controller.selectNextCategory();
             return EventResult.HANDLED;
         } else if (event.isChar('d')) {
-            controller.setRemoveCategoryDialogVisible(true);
+            controller.showDeleteConfirmationPopup();
             return EventResult.HANDLED;
         } else if (event.isChar('c')) {
             controller.clearCategorySelection();

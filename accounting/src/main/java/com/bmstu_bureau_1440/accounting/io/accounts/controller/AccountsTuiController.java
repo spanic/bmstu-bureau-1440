@@ -4,7 +4,7 @@ import com.bmstu_bureau_1440.accounting.Storage;
 import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
-import com.bmstu_bureau_1440.accounting.services.AccountOperationsService;
+import com.bmstu_bureau_1440.accounting.services.AccountsService;
 import dev.tamboui.widgets.form.FormState;
 import dev.tamboui.widgets.table.TableState;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public class AccountsTuiController {
 
     private final Storage storage;
 
-    private final AccountOperationsService accountsService;
+    private final AccountsService accountsService;
 
     @Getter
     private final TableState accountsTableState = new TableState();
@@ -37,8 +37,8 @@ public class AccountsTuiController {
 
     @Getter
     private final FormState form = FormState.builder()
-            .textField(InputFields.ACCOUNT_NAME.getFieldName(), "")
-            .textField(InputFields.ACCOUNT_BALANCE.getFieldName(), "0")
+            .textField(InputFields.ACCOUNT_NAME.getFieldName(), StringUtils.EMPTY)
+            .textField(InputFields.ACCOUNT_BALANCE.getFieldName(), BigDecimal.ZERO.toPlainString())
             .build();
 
     // Queries
@@ -88,6 +88,12 @@ public class AccountsTuiController {
         }
     }
 
+    public void showDeleteConfirmationPopup() {
+        if (selectedBankAccount != null) {
+            setRemoveAccountDialogVisible(true);
+        }
+    }
+
     public void removeAccount() {
         accountsService.deleteAccount(selectedBankAccount);
 
@@ -112,7 +118,7 @@ public class AccountsTuiController {
         form.textField(InputFields.ACCOUNT_NAME.getFieldName()).moveCursorToEnd();
 
         form.setTextValue(InputFields.ACCOUNT_BALANCE.getFieldName(), selectedBankAccount == null ?
-                "0" : selectedBankAccount.getBalance().toString());
+                BigDecimal.ZERO.toPlainString() : selectedBankAccount.getBalance().toString());
         form.textField(InputFields.ACCOUNT_BALANCE.getFieldName()).moveCursorToEnd();
     }
 

@@ -1,5 +1,6 @@
 package com.bmstu_bureau_1440.accounting.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class Operation {
 
     @Getter

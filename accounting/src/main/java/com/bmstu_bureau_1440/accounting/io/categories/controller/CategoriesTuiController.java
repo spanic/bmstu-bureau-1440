@@ -5,12 +5,13 @@ import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
 import com.bmstu_bureau_1440.accounting.models.Category;
 import com.bmstu_bureau_1440.accounting.models.OperationType;
-import com.bmstu_bureau_1440.accounting.services.CategoryOperationsService;
+import com.bmstu_bureau_1440.accounting.services.CategoriesService;
 import dev.tamboui.widgets.form.FormState;
 import dev.tamboui.widgets.table.TableState;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -24,7 +25,7 @@ public class CategoriesTuiController {
 
     private final Storage storage;
 
-    private final CategoryOperationsService categoryOperationsService;
+    private final CategoriesService categoriesService;
 
     @Getter
     private final TableState categoriesTableState = new TableState();
@@ -38,7 +39,7 @@ public class CategoriesTuiController {
 
     @Getter
     private final FormState form = FormState.builder()
-            .textField(InputFields.CATEGORY_NAME.getFieldName(), "")
+            .textField(InputFields.CATEGORY_NAME.getFieldName(), StringUtils.EMPTY)
             .selectField(InputFields.CATEGORY_TYPE.getFieldName(), Stream.of(OperationType.values()).map(Enum::toString).toList())
             .build();
 
@@ -51,21 +52,21 @@ public class CategoriesTuiController {
     public void selectPreviousCategory() {
         categoriesTableState.selectPrevious();
         selectedCategory = TuiUtils.getSelectedObject(categoriesTableState, getCategories());
-        updateEditAccountForm();
+        updateEditCategoryForm();
         setRemoveCategoryDialogVisible(false);
     }
 
     public void selectNextCategory() {
         categoriesTableState.selectNext(getCategories().size());
         selectedCategory = TuiUtils.getSelectedObject(categoriesTableState, getCategories());
-        updateEditAccountForm();
+        updateEditCategoryForm();
         setRemoveCategoryDialogVisible(false);
     }
 
     public void clearCategorySelection() {
         categoriesTableState.clearSelection();
         selectedCategory = null;
-        updateEditAccountForm();
+        updateEditCategoryForm();
     }
 
     public void createOrUpdateCategory() {
@@ -82,14 +83,20 @@ public class CategoriesTuiController {
             selectedCategory.setName(name);
             selectedCategory.setType(type);
         } else {
-            categoryOperationsService.addNewCategory(name, type);
+            categoriesService.addNewCategory(name, type);
             categoriesTableState.selectLast(getCategories().size());
             selectedCategory = TuiUtils.getSelectedObject(categoriesTableState, getCategories());
         }
     }
 
+    public void showDeleteConfirmationPopup() {
+        if (selectedCategory != null) {
+            setRemoveCategoryDialogVisible(true);
+        }
+    }
+
     public void removeCategory() {
-        categoryOperationsService.deleteCategory(selectedCategory);
+        categoriesService.deleteCategory(selectedCategory);
 
         setRemoveCategoryDialogVisible(false);
 
@@ -101,14 +108,22 @@ public class CategoriesTuiController {
             }
         } else {
             selectedCategory = TuiUtils.getSelectedObject(categoriesTableState, getCategories());
-            updateEditAccountForm();
+            updateEditCategoryForm();
         }
     }
 
-    private void updateEditAccountForm() {
+    private void updateEditCategoryForm() {
         form.setTextValue(InputFields.CATEGORY_NAME.getFieldName(), selectedCategory == null ?
                 StringUtils.EMPTY : selectedCategory.getName());
         form.textField(InputFields.CATEGORY_NAME.getFieldName()).moveCursorToEnd();
+
+        final var indexOfSelectedCategoryType = selectedCategory != null ?
+                ArrayUtils.indexOf(
+                        Stream.of(OperationType.values()).map(Enum::toString).toArray(),
+                        selectedCategory.getType().toString()
+                )
+                : 0;
+        form.selectField(InputFields.CATEGORY_TYPE.getFieldName()).selectIndex(indexOfSelectedCategoryType);
     }
 
 }

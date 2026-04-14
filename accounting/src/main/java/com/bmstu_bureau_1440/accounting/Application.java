@@ -3,6 +3,7 @@ package com.bmstu_bureau_1440.accounting;
 import com.bmstu_bureau_1440.accounting.io.AccountingTUI;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import com.bmstu_bureau_1440.accounting.models.Category;
+import com.bmstu_bureau_1440.accounting.models.Operation;
 import com.bmstu_bureau_1440.accounting.models.OperationType;
 import com.bmstu_bureau_1440.accounting.repositories.FileStorageRepository;
 import com.bmstu_bureau_1440.accounting.services.AnalyticsService;
@@ -39,6 +40,10 @@ public class Application {
         storage.getCategories().addAll(List.of(
                 new Category(OperationType.DEPOSIT, "Salary"),
                 new Category(OperationType.WITHDRAWAL, "Games")
+        ));
+        storage.getOperations().addAll(List.of(
+                new Operation("1", "1", BigDecimal.valueOf(20), ""),
+                new Operation("2", "2", BigDecimal.ZERO, "")
         ));
         tui.run();
     }

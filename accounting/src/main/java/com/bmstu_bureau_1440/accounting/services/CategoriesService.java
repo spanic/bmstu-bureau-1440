@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryOperationsService {
+public class CategoriesService {
 
     private final Storage storage;
 
@@ -20,6 +20,13 @@ public class CategoryOperationsService {
 
     public boolean deleteCategory(Category category) {
         return storage.getCategories().remove(category);
+    }
+
+    public Category getCategoryById(String id) {
+        return storage.getCategories().stream()
+                .filter(category -> category.getId().equals(id))
+                .findFirst()
+                .orElseThrow();
     }
 
 }
