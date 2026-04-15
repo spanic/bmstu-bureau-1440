@@ -1,14 +1,16 @@
 package com.bmstu_bureau_1440.accounting.services;
 
-import com.bmstu_bureau_1440.accounting.Storage;
-import com.bmstu_bureau_1440.accounting.models.BankAccount;
-import com.bmstu_bureau_1440.accounting.models.Operation;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import com.bmstu_bureau_1440.accounting.Storage;
+import com.bmstu_bureau_1440.accounting.models.BankAccount;
+import com.bmstu_bureau_1440.accounting.models.Operation;
+
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +32,7 @@ public class AccountsService {
         final BankAccount bankAccount = getAccountById(operation.getBankAccountId());
 
         final BigDecimal updatedBalance = bankAccount.getBalance().add(
-                operation.getAmount().multiply(isRollback ? BigDecimal.valueOf(-1) : BigDecimal.ONE)
-        );
+                operation.getAmount().multiply(isRollback ? BigDecimal.valueOf(-1) : BigDecimal.ONE));
 
         if (updatedBalance.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Cannot apply operation: account balance cannot be negative");

@@ -18,9 +18,11 @@ import dev.tamboui.toolkit.element.StyledElement;
 import dev.tamboui.toolkit.event.EventResult;
 import dev.tamboui.tui.event.KeyCode;
 import dev.tamboui.tui.event.KeyEvent;
+import dev.tamboui.widgets.common.ScrollBarPolicy;
 import dev.tamboui.widgets.list.ListItem;
 import dev.tamboui.widgets.list.ListState;
 import dev.tamboui.widgets.list.ListWidget;
+import dev.tamboui.widgets.list.ScrollMode;
 
 public abstract class AbstractFilterWidget extends StyledElement<AbstractFilterWidget> {
 
@@ -34,11 +36,26 @@ public abstract class AbstractFilterWidget extends StyledElement<AbstractFilterW
     @Override
     protected void renderContent(Frame frame, Rect area, RenderContext renderContext) {
         setItemsData();
+        normalizeSelection();
         renderList(frame, area);
     }
 
     private void setItemsData() {
         this.items = getItemsData();
+    }
+
+    private void normalizeSelection() {
+        if (items.isEmpty()) {
+            listState.select(null);
+            return;
+        }
+
+        Integer selected = listState.selected();
+        if (selected == null) {
+            listState.selectFirst();
+        } else if (selected >= items.size()) {
+            listState.selectLast(items.size());
+        }
     }
 
     private void renderList(Frame frame, Rect area) {
@@ -51,6 +68,8 @@ public abstract class AbstractFilterWidget extends StyledElement<AbstractFilterW
                 .style(Style.EMPTY.fg(Color.indexed(250)))
                 .highlightStyle(Style.EMPTY.bg(Color.indexed(238)).bold())
                 .highlightSymbol(">")
+                .scrollMode(ScrollMode.AUTO_SCROLL)
+                .scrollBarPolicy(ScrollBarPolicy.AS_NEEDED)
                 .build();
 
         frame.renderStatefulWidget(list, area, listState);

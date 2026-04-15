@@ -1,10 +1,14 @@
 package com.bmstu_bureau_1440.accounting.io.operations.view;
 
+import java.util.List;
+import java.util.function.Function;
+
 import com.bmstu_bureau_1440.accounting.io.common.Column;
 import com.bmstu_bureau_1440.accounting.io.common.widgets.AbstractTableWidget;
 import com.bmstu_bureau_1440.accounting.io.common.widgets.ConfirmationDialogWidget;
 import com.bmstu_bureau_1440.accounting.io.operations.controller.OperationsTuiController;
 import com.bmstu_bureau_1440.accounting.models.Operation;
+
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.terminal.Frame;
@@ -12,9 +16,6 @@ import dev.tamboui.toolkit.element.RenderContext;
 import dev.tamboui.toolkit.event.EventResult;
 import dev.tamboui.tui.event.KeyEvent;
 import dev.tamboui.widgets.table.TableState;
-
-import java.util.List;
-import java.util.function.Function;
 
 public class OperationsTableWidget extends AbstractTableWidget<Operation, OperationsTuiController> {
 
@@ -30,13 +31,13 @@ public class OperationsTableWidget extends AbstractTableWidget<Operation, Operat
     @Override
     protected List<Column<Operation>> getColumns() {
         return List.of(
-                new Column<>("ID", Constraint.percentage(15), Operation::getId),
-                new Column<>("Timestamp", Constraint.percentage(15), operation -> operation.getDate().toString()),
-                new Column<>("Account ID", Constraint.percentage(15), Operation::getBankAccountId),
-                new Column<>("Category ID", Constraint.percentage(15), Operation::getCategoryId),
+                new Column<>("Timestamp", Constraint.percentage(30), operation -> operation.getDate().toString()),
+                new Column<>("Account", Constraint.percentage(15),
+                        operation -> controller.getAccountById(operation.getBankAccountId()).getName()),
+                new Column<>("Category", Constraint.percentage(15),
+                        operation -> controller.getCategoryById(operation.getCategoryId()).getName()),
                 new Column<>("Amount", Constraint.percentage(10), operation -> operation.getAmount().toPlainString()),
-                new Column<>("Description", Constraint.fill(), Operation::getDescription)
-        );
+                new Column<>("Description", Constraint.fill(), Operation::getDescription));
     }
 
     @Override
@@ -53,8 +54,7 @@ public class OperationsTableWidget extends AbstractTableWidget<Operation, Operat
                     new ConfirmationDialogWidget(controller::removeOperation, () -> {
                         controller.setRemoveOperationDialogVisible(false);
                     }),
-                    frame, rect
-            );
+                    frame, rect);
         }
     }
 

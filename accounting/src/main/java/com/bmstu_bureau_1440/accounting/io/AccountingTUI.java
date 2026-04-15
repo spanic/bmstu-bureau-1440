@@ -19,6 +19,7 @@ import com.bmstu_bureau_1440.accounting.io.categories.view.CategoryDetailsWidget
 import com.bmstu_bureau_1440.accounting.io.operations.controller.OperationsTuiController;
 import com.bmstu_bureau_1440.accounting.io.operations.view.AccountsSelectorFilterWidget;
 import com.bmstu_bureau_1440.accounting.io.operations.view.CategoriesSelectorFilterWidget;
+import com.bmstu_bureau_1440.accounting.io.operations.view.OperationsDetailsWidget;
 import com.bmstu_bureau_1440.accounting.io.operations.view.OperationsTableWidget;
 
 import dev.tamboui.style.Color;
@@ -41,6 +42,7 @@ public class AccountingTUI extends ToolkitApp {
     private final AccountsSelectorFilterWidget accountsFilter;
     private final CategoriesSelectorFilterWidget categoriesFilter;
     private final OperationsTableWidget operationsTable;
+    private final OperationsDetailsWidget operationsDetailsWidget;
 
     public AccountingTUI(AccountingTuiController controller,
             AccountsTuiController accountsController,
@@ -64,12 +66,15 @@ public class AccountingTUI extends ToolkitApp {
         this.accountsFilter = new AccountsSelectorFilterWidget(operationsController);
         this.categoriesFilter = new CategoriesSelectorFilterWidget(operationsController);
         this.operationsTable = new OperationsTableWidget(operationsController);
+        this.operationsDetailsWidget = new OperationsDetailsWidget(operationsController);
     }
 
     @Override
     protected void onStart() {
         accountsController.selectNextAccount();
         categoriesController.selectNextCategory();
+        operationsController.selectNextOperation();
+        operationsController.syncOperationFormSelectOptions();
     }
 
     @Override
@@ -95,7 +100,8 @@ public class AccountingTUI extends ToolkitApp {
             case 1 -> {
                 return column(
                         row(renderAccountsFilter(), renderCategoriesFilter()).percent(20),
-                        renderOperations()).fill();
+                        renderOperations(),
+                        renderOperationDetails()).fill();
             }
             case 2 -> {
                 return column(
@@ -142,6 +148,10 @@ public class AccountingTUI extends ToolkitApp {
                 .focusable()
                 .focusedBorderColor(Color.BLUE)
                 .fill();
+    }
+
+    private Element renderOperationDetails() {
+        return panel("Details", operationsDetailsWidget);
     }
 
     private Element renderAccountsFilter() {
