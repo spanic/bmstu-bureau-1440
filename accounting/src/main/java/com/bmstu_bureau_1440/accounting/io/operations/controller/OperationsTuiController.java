@@ -1,5 +1,16 @@
 package com.bmstu_bureau_1440.accounting.io.operations.controller;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+
 import com.bmstu_bureau_1440.accounting.Storage;
 import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
@@ -7,18 +18,12 @@ import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import com.bmstu_bureau_1440.accounting.models.Category;
 import com.bmstu_bureau_1440.accounting.models.Operation;
 import com.bmstu_bureau_1440.accounting.services.OperationsService;
+
 import dev.tamboui.widgets.form.FormState;
+import dev.tamboui.widgets.list.ListState;
 import dev.tamboui.widgets.table.TableState;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Controller;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class OperationsTuiController {
@@ -29,6 +34,11 @@ public class OperationsTuiController {
 
     @Getter
     private final TableState operationsTableState = new TableState();
+
+    @Getter
+    private final ListState accountsFilterListState = new ListState();
+
+    private final Set<String> selectedAccountIds = new LinkedHashSet<>();
 
     @Getter
     @Setter
@@ -55,6 +65,15 @@ public class OperationsTuiController {
     // Queries
     public List<Operation> getOperations() {
         return storage.getOperations();
+    }
+
+    public List<BankAccount> getAccounts() {
+        selectedAccountIds.retainAll(storage.getAccounts().stream().map(BankAccount::getId).toList());
+        return storage.getAccounts();
+    }
+
+    public Set<String> getSelectedAccountIds() {
+        return Set.copyOf(selectedAccountIds);
     }
 
     // Commands
@@ -117,13 +136,25 @@ public class OperationsTuiController {
 
     }
 
+    public boolean isAccountSelected(String accountId) {
+        return selectedAccountIds.contains(accountId);
+    }
+
+    public void toggleAccountSelection(String accountId) {
+        if (selectedAccountIds.contains(accountId)) {
+            selectedAccountIds.remove(accountId);
+            return;
+        }
+        selectedAccountIds.add(accountId);
+    }
+
     private void updateEditOperationForm() {
-        form.setTextValue(InputFields.OPERATION_DESCRIPTION.getFieldName(), selectedOperation == null ?
-                StringUtils.EMPTY : selectedOperation.getDescription());
+        form.setTextValue(InputFields.OPERATION_DESCRIPTION.getFieldName(),
+                selectedOperation == null ? StringUtils.EMPTY : selectedOperation.getDescription());
         form.textField(InputFields.OPERATION_DESCRIPTION.getFieldName()).moveCursorToEnd();
 
-        form.setTextValue(InputFields.OPERATION_AMOUNT.getFieldName(), selectedOperation == null ?
-                BigDecimal.ZERO.toPlainString() : selectedOperation.getAmount().toString());
+        form.setTextValue(InputFields.OPERATION_AMOUNT.getFieldName(),
+                selectedOperation == null ? BigDecimal.ZERO.toPlainString() : selectedOperation.getAmount().toString());
         form.textField(InputFields.OPERATION_AMOUNT.getFieldName()).moveCursorToEnd();
     }
 

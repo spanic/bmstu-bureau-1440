@@ -1,5 +1,12 @@
 package com.bmstu_bureau_1440.accounting.io.operations.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.bmstu_bureau_1440.accounting.io.common.ItemData;
+import com.bmstu_bureau_1440.accounting.io.common.ItemData.Status;
+import com.bmstu_bureau_1440.accounting.io.operations.controller.OperationsTuiController;
+
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;
 import dev.tamboui.style.Style;
@@ -13,62 +20,31 @@ import dev.tamboui.toolkit.event.EventResult;
 import dev.tamboui.tui.event.KeyCode;
 import dev.tamboui.tui.event.KeyEvent;
 import dev.tamboui.widgets.list.ListItem;
-import dev.tamboui.widgets.list.ListState;
 import dev.tamboui.widgets.list.ListWidget;
+import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@RequiredArgsConstructor
 public class AccountsSelectorFilter extends StyledElement<AccountsSelectorFilter> {
 
-    private enum Status {
-        SELECTED,
-        NOT_SELECTED
-    }
+    private final OperationsTuiController controller;
 
-    private static class Item {
-        final String title;
-        final String info;
-        Status status;
-
-        Item(Status status, String todo, String info) {
-            this.status = status;
-            this.title = todo;
-            this.info = info;
-        }
-    }
-
-    private final ListState listState = new ListState();
-
-    private final List<Item> items = List.of(
-            new Item(Status.NOT_SELECTED, "test", "123"),
-            new Item(Status.NOT_SELECTED, "hello", "123")
-    );
+    private final List<ItemData> items = new ArrayList<>();
 
     @Override
     protected void renderContent(Frame frame, Rect area, RenderContext context) {
+        buildItemsFromAccounts();
         renderList(frame, area);
     }
 
-    private List<ListItem> buildListItems() {
-        List<ListItem> items = new ArrayList<>();
-        for (int i = 0; i < this.items.size(); i++) {
-            Item todoItem = this.items.get(i);
-            Color bgColor = (i % 2 == 0)
-                    ? Color.indexed(235)  // Dark gray (similar to SLATE.c950)
-                    : Color.indexed(236); // Slightly lighter (similar to SLATE.c900)
+    private void buildItemsFromAccounts() {
+        items.clear();
 
-            Text line;
-            if (todoItem.status == Status.NOT_SELECTED) {
-                line = MarkupParser.parse("[light-gray] :black_square_button: " + todoItem.title);
-            } else {
-                line = MarkupParser.parse("[green] :white_check_mark: " + todoItem.title);
-            }
-
-            ListItem item = ListItem.from(line).style(Style.EMPTY.bg(bgColor));
-            items.add(item);
-        }
-        return items;
+        controller.getAccounts().stream()
+                .map(account -> new ItemData(
+                        account.getName(),
+                        account.getId(),
+                        controller.isAccountSelected(account.getId()) ? Status.SELECTED : Status.NOT_SELECTED))
+                .forEach(items::add);
     }
 
     private void renderList(Frame frame, Rect area) {
@@ -83,15 +59,28 @@ public class AccountsSelectorFilter extends StyledElement<AccountsSelectorFilter
                 .highlightSymbol(">")
                 .build();
 
-        frame.renderStatefulWidget(list, area, listState);
+        frame.renderStatefulWidget(list, area, controller.getAccountsFilterListState());
     }
 
-    private void toggleStatus() {
-        Integer selected = listState.selected();
-        if (selected != null && selected >= 0 && selected < items.size()) {
-            Item item = items.get(selected);
-            item.status = item.status == Status.NOT_SELECTED ? Status.SELECTED : Status.NOT_SELECTED;
+    private List<ListItem> buildListItems() {
+        List<ListItem> items = new ArrayList<>();
+        for (int i = 0; i < this.items.size(); i++) {
+            ItemData todoItem = this.items.get(i);
+            Color bgColor = (i % 2 == 0)
+                    ? Color.indexed(235) // Dark gray (similar to SLATE.c950)
+                    : Color.indexed(236); // Slightly lighter (similar to SLATE.c900)
+
+            Text line;
+            if (todoItem.getStatus() == Status.NOT_SELECTED) {
+                line = MarkupParser.parse("[light-gray] :black_square_button: " + todoItem.getTitle());
+            } else {
+                line = MarkupParser.parse("[green] :white_check_mark: " + todoItem.getTitle());
+            }
+
+            ListItem item = ListItem.from(line).style(Style.EMPTY.bg(bgColor));
+            items.add(item);
         }
+        return items;
     }
 
     @Override
@@ -100,17 +89,27 @@ public class AccountsSelectorFilter extends StyledElement<AccountsSelectorFilter
             return EventResult.UNHANDLED;
         }
 
+        buildItemsFromAccounts();
+
         if (event.isUp()) {
-            listState.selectPrevious();
+            controller.getAccountsFilterListState().selectPrevious();
             return EventResult.HANDLED;
         } else if (event.isDown()) {
-            listState.selectNext(items.size());
+            controller.getAccountsFilterListState().selectNext(items.size());
             return EventResult.HANDLED;
         } else if (event.isKey(KeyCode.ENTER) || event.isChar(' ')) {
             toggleStatus();
             return EventResult.HANDLED;
         } else {
             return EventResult.UNHANDLED;
+        }
+    }
+
+    private void toggleStatus() {
+        Integer selectedIdx = controller.getAccountsFilterListState().selected();
+        if (selectedIdx != null && selectedIdx >= 0 && selectedIdx < items.size()) {
+            ItemData selectedListItemData = items.get(selectedIdx);
+            controller.toggleAccountSelection(selectedListItemData.getKey());
         }
     }
 

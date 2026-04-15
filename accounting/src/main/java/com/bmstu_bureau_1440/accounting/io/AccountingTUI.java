@@ -1,5 +1,13 @@
 package com.bmstu_bureau_1440.accounting.io;
 
+import static dev.tamboui.toolkit.Toolkit.column;
+import static dev.tamboui.toolkit.Toolkit.panel;
+import static dev.tamboui.toolkit.Toolkit.row;
+import static dev.tamboui.toolkit.Toolkit.spacer;
+import static dev.tamboui.toolkit.Toolkit.text;
+
+import org.springframework.stereotype.Component;
+
 import com.bmstu_bureau_1440.accounting.io.accounts.controller.AccountsTuiController;
 import com.bmstu_bureau_1440.accounting.io.accounts.view.AccountDetailsWidget;
 import com.bmstu_bureau_1440.accounting.io.accounts.view.AccountsTableWidget;
@@ -11,12 +19,10 @@ import com.bmstu_bureau_1440.accounting.io.categories.view.CategoryDetailsWidget
 import com.bmstu_bureau_1440.accounting.io.operations.controller.OperationsTuiController;
 import com.bmstu_bureau_1440.accounting.io.operations.view.AccountsSelectorFilter;
 import com.bmstu_bureau_1440.accounting.io.operations.view.OperationsTableWidget;
+
 import dev.tamboui.style.Color;
 import dev.tamboui.toolkit.app.ToolkitApp;
 import dev.tamboui.toolkit.element.Element;
-import org.springframework.stereotype.Component;
-
-import static dev.tamboui.toolkit.Toolkit.*;
 
 @Component
 public class AccountingTUI extends ToolkitApp {
@@ -31,13 +37,13 @@ public class AccountingTUI extends ToolkitApp {
     private final AccountDetailsWidget accountDetailsWidget;
     private final CategoriesTableWidget categoriesTable;
     private final CategoryDetailsWidget categoryDetailsWidget;
-    private final AccountsSelectorFilter filter;
+    private final AccountsSelectorFilter accountsFilter;
     private final OperationsTableWidget operationsTable;
 
     public AccountingTUI(AccountingTuiController controller,
-                         AccountsTuiController accountsController,
-                         CategoriesTuiController categoriesController,
-                         OperationsTuiController operationsController) {
+            AccountsTuiController accountsController,
+            CategoriesTuiController categoriesController,
+            OperationsTuiController operationsController) {
         this.controller = controller;
         this.accountsController = accountsController;
         this.categoriesController = categoriesController;
@@ -53,7 +59,7 @@ public class AccountingTUI extends ToolkitApp {
         this.categoriesTable = new CategoriesTableWidget(categoriesController);
         this.categoryDetailsWidget = new CategoryDetailsWidget(categoriesController);
 
-        this.filter = new AccountsSelectorFilter();
+        this.accountsFilter = new AccountsSelectorFilter(operationsController);
         this.operationsTable = new OperationsTableWidget(operationsController);
     }
 
@@ -69,8 +75,7 @@ public class AccountingTUI extends ToolkitApp {
                 "Bank application",
                 renderMainTabsNavigation(),
                 renderContent(),
-                text("Press 'q' to quit").dim()
-        )
+                text("Press 'q' to quit").dim())
                 .borderColor(Color.YELLOW)
                 .rounded();
     }
@@ -82,21 +87,17 @@ public class AccountingTUI extends ToolkitApp {
             case 0 -> {
                 return column(
                         renderAccounts(),
-                        renderAccountDetails()
-                ).fill();
+                        renderAccountDetails()).fill();
             }
             case 1 -> {
                 return column(
-                        panel(filter)
-                                .id("accounts-filter").focusable().focusedBorderColor(Color.MAGENTA),
-                        renderOperations()
-                ).fill();
+                        row(renderAccountsFilter(), spacer().percent(50)).percent(40),
+                        renderOperations()).fill();
             }
             case 2 -> {
                 return column(
                         renderCategories(),
-                        renderCategoryDetails()
-                ).fill();
+                        renderCategoryDetails()).fill();
             }
             default -> {
                 return spacer();
@@ -136,6 +137,15 @@ public class AccountingTUI extends ToolkitApp {
         return panel("Operations", operationsTable)
                 .id("operations")
                 .focusable()
-                .focusedBorderColor(Color.BLUE);
+                .focusedBorderColor(Color.BLUE)
+                .fill();
+    }
+
+    private Element renderAccountsFilter() {
+        return panel("Filter by accounts:", accountsFilter)
+                .id("accounts-filter")
+                .focusable()
+                .focusedBorderColor(Color.MAGENTA)
+                .percent(50);
     }
 }
