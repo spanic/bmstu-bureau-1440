@@ -17,7 +17,8 @@ import com.bmstu_bureau_1440.accounting.io.categories.controller.CategoriesTuiCo
 import com.bmstu_bureau_1440.accounting.io.categories.view.CategoriesTableWidget;
 import com.bmstu_bureau_1440.accounting.io.categories.view.CategoryDetailsWidget;
 import com.bmstu_bureau_1440.accounting.io.operations.controller.OperationsTuiController;
-import com.bmstu_bureau_1440.accounting.io.operations.view.AccountsSelectorFilter;
+import com.bmstu_bureau_1440.accounting.io.operations.view.AccountsSelectorFilterWidget;
+import com.bmstu_bureau_1440.accounting.io.operations.view.CategoriesSelectorFilterWidget;
 import com.bmstu_bureau_1440.accounting.io.operations.view.OperationsTableWidget;
 
 import dev.tamboui.style.Color;
@@ -37,7 +38,8 @@ public class AccountingTUI extends ToolkitApp {
     private final AccountDetailsWidget accountDetailsWidget;
     private final CategoriesTableWidget categoriesTable;
     private final CategoryDetailsWidget categoryDetailsWidget;
-    private final AccountsSelectorFilter accountsFilter;
+    private final AccountsSelectorFilterWidget accountsFilter;
+    private final CategoriesSelectorFilterWidget categoriesFilter;
     private final OperationsTableWidget operationsTable;
 
     public AccountingTUI(AccountingTuiController controller,
@@ -59,7 +61,8 @@ public class AccountingTUI extends ToolkitApp {
         this.categoriesTable = new CategoriesTableWidget(categoriesController);
         this.categoryDetailsWidget = new CategoryDetailsWidget(categoriesController);
 
-        this.accountsFilter = new AccountsSelectorFilter(operationsController);
+        this.accountsFilter = new AccountsSelectorFilterWidget(operationsController);
+        this.categoriesFilter = new CategoriesSelectorFilterWidget(operationsController);
         this.operationsTable = new OperationsTableWidget(operationsController);
     }
 
@@ -91,7 +94,7 @@ public class AccountingTUI extends ToolkitApp {
             }
             case 1 -> {
                 return column(
-                        row(renderAccountsFilter(), spacer().percent(50)).percent(40),
+                        row(renderAccountsFilter(), renderCategoriesFilter()).percent(20),
                         renderOperations()).fill();
             }
             case 2 -> {
@@ -146,6 +149,14 @@ public class AccountingTUI extends ToolkitApp {
                 .id("accounts-filter")
                 .focusable()
                 .focusedBorderColor(Color.MAGENTA)
-                .percent(50);
+                .percent(100 / 3);
+    }
+
+    private Element renderCategoriesFilter() {
+        return panel("Filter by categories:", categoriesFilter)
+                .id("categories-filter")
+                .focusable()
+                .focusedBorderColor(Color.MAGENTA)
+                .percent(100 / 3);
     }
 }

@@ -1,11 +1,10 @@
-package com.bmstu_bureau_1440.accounting.io.operations.view;
+package com.bmstu_bureau_1440.accounting.io.common.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.bmstu_bureau_1440.accounting.io.common.ItemData;
 import com.bmstu_bureau_1440.accounting.io.common.ItemData.Status;
-import com.bmstu_bureau_1440.accounting.io.operations.controller.OperationsTuiController;
 
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;
@@ -20,31 +19,26 @@ import dev.tamboui.toolkit.event.EventResult;
 import dev.tamboui.tui.event.KeyCode;
 import dev.tamboui.tui.event.KeyEvent;
 import dev.tamboui.widgets.list.ListItem;
+import dev.tamboui.widgets.list.ListState;
 import dev.tamboui.widgets.list.ListWidget;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-public class AccountsSelectorFilter extends StyledElement<AccountsSelectorFilter> {
+public abstract class AbstractFilterWidget extends StyledElement<AbstractFilterWidget> {
 
-    private final OperationsTuiController controller;
+    private final ListState listState = new ListState();
+    private List<ItemData> items = new ArrayList<>();
 
-    private final List<ItemData> items = new ArrayList<>();
+    protected abstract List<ItemData> getItemsData();
+
+    protected abstract void onItemSelected(ItemData itemData);
 
     @Override
-    protected void renderContent(Frame frame, Rect area, RenderContext context) {
-        buildItemsFromAccounts();
+    protected void renderContent(Frame frame, Rect area, RenderContext renderContext) {
+        setItemsData();
         renderList(frame, area);
     }
 
-    private void buildItemsFromAccounts() {
-        items.clear();
-
-        controller.getAccounts().stream()
-                .map(account -> new ItemData(
-                        account.getName(),
-                        account.getId(),
-                        controller.isAccountSelected(account.getId()) ? Status.SELECTED : Status.NOT_SELECTED))
-                .forEach(items::add);
+    private void setItemsData() {
+        this.items = getItemsData();
     }
 
     private void renderList(Frame frame, Rect area) {
@@ -59,27 +53,32 @@ public class AccountsSelectorFilter extends StyledElement<AccountsSelectorFilter
                 .highlightSymbol(">")
                 .build();
 
-        frame.renderStatefulWidget(list, area, controller.getAccountsFilterListState());
+        frame.renderStatefulWidget(list, area, listState);
     }
 
     private List<ListItem> buildListItems() {
         List<ListItem> items = new ArrayList<>();
+
         for (int i = 0; i < this.items.size(); i++) {
-            ItemData todoItem = this.items.get(i);
+
+            ItemData itemData = this.items.get(i);
+
             Color bgColor = (i % 2 == 0)
                     ? Color.indexed(235) // Dark gray (similar to SLATE.c950)
                     : Color.indexed(236); // Slightly lighter (similar to SLATE.c900)
 
             Text line;
-            if (todoItem.getStatus() == Status.NOT_SELECTED) {
-                line = MarkupParser.parse("[light-gray] :black_square_button: " + todoItem.getTitle());
+            if (itemData.getStatus() == Status.NOT_SELECTED) {
+                line = MarkupParser.parse("[light-gray] :black_square_button: " + itemData.getTitle());
             } else {
-                line = MarkupParser.parse("[green] :white_check_mark: " + todoItem.getTitle());
+                line = MarkupParser.parse("[green] :white_check_mark: " + itemData.getTitle());
             }
 
             ListItem item = ListItem.from(line).style(Style.EMPTY.bg(bgColor));
+
             items.add(item);
         }
+
         return items;
     }
 
@@ -89,27 +88,17 @@ public class AccountsSelectorFilter extends StyledElement<AccountsSelectorFilter
             return EventResult.UNHANDLED;
         }
 
-        buildItemsFromAccounts();
-
         if (event.isUp()) {
-            controller.getAccountsFilterListState().selectPrevious();
+            listState.selectPrevious();
             return EventResult.HANDLED;
         } else if (event.isDown()) {
-            controller.getAccountsFilterListState().selectNext(items.size());
+            listState.selectNext(items.size());
             return EventResult.HANDLED;
         } else if (event.isKey(KeyCode.ENTER) || event.isChar(' ')) {
-            toggleStatus();
+            onItemSelected(items.get(listState.selected()));
             return EventResult.HANDLED;
         } else {
             return EventResult.UNHANDLED;
-        }
-    }
-
-    private void toggleStatus() {
-        Integer selectedIdx = controller.getAccountsFilterListState().selected();
-        if (selectedIdx != null && selectedIdx >= 0 && selectedIdx < items.size()) {
-            ItemData selectedListItemData = items.get(selectedIdx);
-            controller.toggleAccountSelection(selectedListItemData.getKey());
         }
     }
 
@@ -117,4 +106,5 @@ public class AccountsSelectorFilter extends StyledElement<AccountsSelectorFilter
     public Size preferredSize(int availableWidth, int availableHeight, RenderContext context) {
         return Size.UNKNOWN;
     }
+
 }

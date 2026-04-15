@@ -2,7 +2,7 @@ package com.bmstu_bureau_1440.accounting.io.operations.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,7 +20,6 @@ import com.bmstu_bureau_1440.accounting.models.Operation;
 import com.bmstu_bureau_1440.accounting.services.OperationsService;
 
 import dev.tamboui.widgets.form.FormState;
-import dev.tamboui.widgets.list.ListState;
 import dev.tamboui.widgets.table.TableState;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,10 +34,9 @@ public class OperationsTuiController {
     @Getter
     private final TableState operationsTableState = new TableState();
 
-    @Getter
-    private final ListState accountsFilterListState = new ListState();
+    private final Set<String> selectedAccountIds = new HashSet<>();
 
-    private final Set<String> selectedAccountIds = new LinkedHashSet<>();
+    private final Set<String> selectedCategoryIds = new HashSet<>();
 
     @Getter
     @Setter
@@ -72,8 +70,25 @@ public class OperationsTuiController {
         return storage.getAccounts();
     }
 
+    public List<Category> getCategories() {
+        selectedCategoryIds.retainAll(storage.getCategories().stream().map(Category::getId).toList());
+        return storage.getCategories();
+    }
+
     public Set<String> getSelectedAccountIds() {
         return Set.copyOf(selectedAccountIds);
+    }
+
+    public Set<String> getSelectedCategoryIds() {
+        return Set.copyOf(selectedCategoryIds);
+    }
+
+    public boolean isAccountSelected(String accountId) {
+        return selectedAccountIds.contains(accountId);
+    }
+
+    public boolean isCategorySelected(String categoryId) {
+        return selectedCategoryIds.contains(categoryId);
     }
 
     // Commands
@@ -136,16 +151,20 @@ public class OperationsTuiController {
 
     }
 
-    public boolean isAccountSelected(String accountId) {
-        return selectedAccountIds.contains(accountId);
-    }
-
     public void toggleAccountSelection(String accountId) {
         if (selectedAccountIds.contains(accountId)) {
             selectedAccountIds.remove(accountId);
-            return;
+        } else {
+            selectedAccountIds.add(accountId);
         }
-        selectedAccountIds.add(accountId);
+    }
+
+    public void toggleCategorySelection(String categoryId) {
+        if (selectedCategoryIds.contains(categoryId)) {
+            selectedCategoryIds.remove(categoryId);
+        } else {
+            selectedCategoryIds.add(categoryId);
+        }
     }
 
     private void updateEditOperationForm() {
