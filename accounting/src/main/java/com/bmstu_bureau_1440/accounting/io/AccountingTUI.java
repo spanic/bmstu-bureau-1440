@@ -21,6 +21,7 @@ import com.bmstu_bureau_1440.accounting.io.operations.view.AccountsSelectorFilte
 import com.bmstu_bureau_1440.accounting.io.operations.view.CategoriesSelectorFilterWidget;
 import com.bmstu_bureau_1440.accounting.io.operations.view.OperationsDetailsWidget;
 import com.bmstu_bureau_1440.accounting.io.operations.view.OperationsTableWidget;
+import com.bmstu_bureau_1440.accounting.io.operations.view.TotalSummaryWidget;
 
 import dev.tamboui.style.Color;
 import dev.tamboui.toolkit.app.ToolkitApp;
@@ -43,6 +44,7 @@ public class AccountingTUI extends ToolkitApp {
     private final CategoriesSelectorFilterWidget categoriesFilter;
     private final OperationsTableWidget operationsTable;
     private final OperationsDetailsWidget operationsDetailsWidget;
+    private final TotalSummaryWidget totalSummaryWidget;
 
     public AccountingTUI(AccountingTuiController controller,
             AccountsTuiController accountsController,
@@ -67,6 +69,7 @@ public class AccountingTUI extends ToolkitApp {
         this.categoriesFilter = new CategoriesSelectorFilterWidget(operationsController);
         this.operationsTable = new OperationsTableWidget(operationsController);
         this.operationsDetailsWidget = new OperationsDetailsWidget(operationsController);
+        this.totalSummaryWidget = new TotalSummaryWidget(operationsController);
     }
 
     @Override
@@ -98,7 +101,7 @@ public class AccountingTUI extends ToolkitApp {
             }
             case 1 -> {
                 return column(
-                        row(renderAccountsFilter(), renderCategoriesFilter()).percent(20),
+                        row(renderAccountsFilter(), renderCategoriesFilter(), renderTotalSummary()).percent(20),
                         renderOperations(),
                         renderOperationDetails()).fill();
             }
@@ -167,5 +170,9 @@ public class AccountingTUI extends ToolkitApp {
                 .focusable()
                 .focusedBorderColor(Color.MAGENTA)
                 .percent(100 / 3);
+    }
+
+    private Element renderTotalSummary() {
+        return panel("Summary", totalSummaryWidget).percent(100 / 3);
     }
 }

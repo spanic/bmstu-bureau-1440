@@ -1,21 +1,23 @@
 package com.bmstu_bureau_1440.accounting.io.accounts.controller;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+
 import com.bmstu_bureau_1440.accounting.Storage;
 import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import com.bmstu_bureau_1440.accounting.services.AccountsService;
+
 import dev.tamboui.widgets.form.FormState;
 import dev.tamboui.widgets.table.TableState;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Controller;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -80,7 +82,6 @@ public class AccountsTuiController {
 
         if (ObjectUtils.isNotEmpty(selectedBankAccount)) {
             selectedBankAccount.setName(name);
-            selectedBankAccount.setBalance(balance);
         } else {
             accountsService.addNewBankAccount(name, balance);
             accountsTableState.selectLast(storage.getAccounts().size());
@@ -113,12 +114,13 @@ public class AccountsTuiController {
     }
 
     private void updateEditAccountForm() {
-        form.setTextValue(InputFields.ACCOUNT_NAME.getFieldName(), selectedBankAccount == null ?
-                StringUtils.EMPTY : selectedBankAccount.getName());
+        form.setTextValue(InputFields.ACCOUNT_NAME.getFieldName(),
+                selectedBankAccount == null ? StringUtils.EMPTY : selectedBankAccount.getName());
         form.textField(InputFields.ACCOUNT_NAME.getFieldName()).moveCursorToEnd();
 
-        form.setTextValue(InputFields.ACCOUNT_BALANCE.getFieldName(), selectedBankAccount == null ?
-                BigDecimal.ZERO.toPlainString() : selectedBankAccount.getBalance().toString());
+        form.setTextValue(InputFields.ACCOUNT_BALANCE.getFieldName(),
+                selectedBankAccount == null ? BigDecimal.ZERO.toPlainString()
+                        : selectedBankAccount.getBalance().toString());
         form.textField(InputFields.ACCOUNT_BALANCE.getFieldName()).moveCursorToEnd();
     }
 

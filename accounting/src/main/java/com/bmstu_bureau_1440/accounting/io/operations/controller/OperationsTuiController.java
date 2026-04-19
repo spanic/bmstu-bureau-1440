@@ -19,6 +19,8 @@ import com.bmstu_bureau_1440.accounting.models.Category;
 import com.bmstu_bureau_1440.accounting.models.Operation;
 import com.bmstu_bureau_1440.accounting.models.OperationType;
 import com.bmstu_bureau_1440.accounting.services.AccountsService;
+import com.bmstu_bureau_1440.accounting.services.AnalyticsService;
+import com.bmstu_bureau_1440.accounting.services.AnalyticsService.AnalyticsResult;
 import com.bmstu_bureau_1440.accounting.services.CategoriesService;
 import com.bmstu_bureau_1440.accounting.services.OperationsService;
 
@@ -36,6 +38,7 @@ public class OperationsTuiController {
     private final OperationsService operationsService;
     private final AccountsService accountsService;
     private final CategoriesService categoriesService;
+    private final AnalyticsService analyticsService;
 
     @Getter
     private final TableState operationsTableState = new TableState();
@@ -61,11 +64,13 @@ public class OperationsTuiController {
     public OperationsTuiController(Storage storage,
             OperationsService operationsService,
             AccountsService accountsService,
-            CategoriesService categoriesService) {
+            CategoriesService categoriesService,
+            AnalyticsService analyticsService) {
         this.storage = storage;
         this.operationsService = operationsService;
         this.accountsService = accountsService;
         this.categoriesService = categoriesService;
+        this.analyticsService = analyticsService;
     }
 
     // Queries
@@ -110,6 +115,10 @@ public class OperationsTuiController {
         return selectedCategoryIds.contains(categoryId);
     }
 
+    public AnalyticsResult getAnalytics() {
+        return analyticsService.getAnalytics();
+    }
+
     // Commands
     public void selectPreviousOperation() {
         operationsTableState.selectPrevious();
@@ -138,6 +147,15 @@ public class OperationsTuiController {
     }
 
     public void createOrUpdateOperation() {
+        boolean isAccountValid = form.validationResult(InputFields.OPERATION_ACCOUNT.getFieldName()).isValid();
+        boolean isCategoryValid = form.validationResult(InputFields.OPERATION_CATEGORY.getFieldName()).isValid();
+        boolean isAmountValid = form.validationResult(InputFields.OPERATION_AMOUNT.getFieldName()).isValid();
+        boolean isDescriptionValid = form.validationResult(InputFields.OPERATION_DESCRIPTION.getFieldName()).isValid();
+
+        if (!isAccountValid || !isCategoryValid || !isAmountValid || !isDescriptionValid) {
+            return;
+        }
+
         String accountId = form.selectValue(InputFields.OPERATION_ACCOUNT.getFieldName());
         String categoryId = form.selectValue(InputFields.OPERATION_CATEGORY.getFieldName());
         BigDecimal amount = new BigDecimal(form.textValue(InputFields.OPERATION_AMOUNT.getFieldName()));

@@ -1,23 +1,25 @@
 package com.bmstu_bureau_1440.accounting.io.categories.controller;
 
+import java.util.List;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+
 import com.bmstu_bureau_1440.accounting.Storage;
 import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
 import com.bmstu_bureau_1440.accounting.models.Category;
 import com.bmstu_bureau_1440.accounting.models.OperationType;
 import com.bmstu_bureau_1440.accounting.services.CategoriesService;
+
 import dev.tamboui.widgets.form.FormState;
 import dev.tamboui.widgets.table.TableState;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Controller;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,7 +42,8 @@ public class CategoriesTuiController {
     @Getter
     private final FormState form = FormState.builder()
             .textField(InputFields.CATEGORY_NAME.getFieldName(), StringUtils.EMPTY)
-            .selectField(InputFields.CATEGORY_TYPE.getFieldName(), Stream.of(OperationType.values()).map(Enum::toString).toList())
+            .selectField(InputFields.CATEGORY_TYPE.getFieldName(),
+                    Stream.of(OperationType.values()).map(Enum::toString).toList())
             .build();
 
     // Queries
@@ -81,7 +84,6 @@ public class CategoriesTuiController {
 
         if (ObjectUtils.isNotEmpty(selectedCategory)) {
             selectedCategory.setName(name);
-            selectedCategory.setType(type);
         } else {
             categoriesService.addNewCategory(name, type);
             categoriesTableState.selectLast(getCategories().size());
@@ -113,15 +115,13 @@ public class CategoriesTuiController {
     }
 
     private void updateEditCategoryForm() {
-        form.setTextValue(InputFields.CATEGORY_NAME.getFieldName(), selectedCategory == null ?
-                StringUtils.EMPTY : selectedCategory.getName());
+        form.setTextValue(InputFields.CATEGORY_NAME.getFieldName(),
+                selectedCategory == null ? StringUtils.EMPTY : selectedCategory.getName());
         form.textField(InputFields.CATEGORY_NAME.getFieldName()).moveCursorToEnd();
 
-        final var indexOfSelectedCategoryType = selectedCategory != null ?
-                ArrayUtils.indexOf(
-                        Stream.of(OperationType.values()).map(Enum::toString).toArray(),
-                        selectedCategory.getType().toString()
-                )
+        final var indexOfSelectedCategoryType = selectedCategory != null ? ArrayUtils.indexOf(
+                Stream.of(OperationType.values()).map(Enum::toString).toArray(),
+                selectedCategory.getType().toString())
                 : 0;
         form.selectField(InputFields.CATEGORY_TYPE.getFieldName()).selectIndex(indexOfSelectedCategoryType);
     }
