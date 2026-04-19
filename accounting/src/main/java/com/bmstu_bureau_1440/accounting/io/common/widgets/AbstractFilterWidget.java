@@ -114,8 +114,15 @@ public abstract class AbstractFilterWidget extends StyledElement<AbstractFilterW
             listState.selectNext(items.size());
             return EventResult.HANDLED;
         } else if (event.isKey(KeyCode.ENTER) || event.isChar(' ')) {
-            onItemSelected(items.get(listState.selected()));
-            return EventResult.HANDLED;
+            if (listState.selected() == null
+                    || listState.selected() >= items.size()
+                    || listState.selected() < 0
+                    || items.size() == 0) {
+                return EventResult.UNHANDLED;
+            } else {
+                onItemSelected(items.get(listState.selected()));
+                return EventResult.HANDLED;
+            }
         } else {
             return EventResult.UNHANDLED;
         }

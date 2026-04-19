@@ -144,12 +144,19 @@ public class OperationsTuiController {
         String description = form.textValue(InputFields.OPERATION_DESCRIPTION.getFieldName());
 
         if (ObjectUtils.isNotEmpty(selectedOperation)) {
-            selectedOperation.setDescription(description);
-        } else {
-            operationsService.addNewOperation(accountId, categoryId, amount, description);
-            operationsTableState.selectLast(getOperations().size());
-            selectedOperation = TuiUtils.getSelectedObject(operationsTableState, getOperations());
+
+            if (selectedOperation.getBankAccountId().equals(accountId)
+                    && selectedOperation.getCategoryId().equals(categoryId)) {
+                selectedOperation.setDescription(description);
+                return;
+            } else {
+                operationsService.deleteOperation(selectedOperation);
+            }
         }
+
+        operationsService.addNewOperation(accountId, categoryId, amount, description);
+        operationsTableState.selectLast(getOperations().size());
+        selectedOperation = TuiUtils.getSelectedObject(operationsTableState, getOperations());
     }
 
     public void showDeleteConfirmationPopup() {
@@ -237,15 +244,21 @@ public class OperationsTuiController {
                 .textField(InputFields.OPERATION_AMOUNT.getFieldName(), amount)
                 .textField(InputFields.OPERATION_DESCRIPTION.getFieldName(), description);
 
-        final int accountIndex = accountOptions.indexOf(selectedAccountId);
+        int accountIndex = 0;
+        int categoryIndex = 0;
 
-        if (accountIndex < 0) {
-            builder.selectField(InputFields.OPERATION_ACCOUNT.getFieldName(), List.of(DELETED_ENTITY_NAME));
-        }
-        final int categoryIndex = categoryOptions.indexOf(selectedCategoryId);
+        if (selectedAccountId != null) {
 
-        if (categoryIndex < 0) {
-            builder.selectField(InputFields.OPERATION_CATEGORY.getFieldName(), List.of(DELETED_ENTITY_NAME));
+            accountIndex = accountOptions.indexOf(selectedAccountId);
+            if (accountIndex < 0) {
+                builder.selectField(InputFields.OPERATION_ACCOUNT.getFieldName(), List.of(DELETED_ENTITY_NAME));
+            }
+
+            categoryIndex = categoryOptions.indexOf(selectedCategoryId);
+            if (categoryIndex < 0) {
+                builder.selectField(InputFields.OPERATION_CATEGORY.getFieldName(), List.of(DELETED_ENTITY_NAME));
+            }
+
         }
 
         FormState state = builder.build();

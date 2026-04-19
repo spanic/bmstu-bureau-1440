@@ -1,9 +1,14 @@
 package com.bmstu_bureau_1440.accounting.io.categories.view;
 
+import static dev.tamboui.toolkit.Toolkit.formField;
+
+import java.util.List;
+
 import com.bmstu_bureau_1440.accounting.io.categories.controller.CategoriesTuiController;
 import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
 import com.bmstu_bureau_1440.accounting.models.Category;
+
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Flex;
 import dev.tamboui.layout.Layout;
@@ -16,15 +21,9 @@ import dev.tamboui.toolkit.element.RenderContext;
 import dev.tamboui.toolkit.element.Size;
 import dev.tamboui.toolkit.element.StyledElement;
 import dev.tamboui.toolkit.elements.FormFieldElement;
-import dev.tamboui.tui.bindings.KeyTrigger;
-import dev.tamboui.tui.event.KeyCode;
 import dev.tamboui.widgets.form.Validators;
 import dev.tamboui.widgets.paragraph.Paragraph;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-
-import static dev.tamboui.toolkit.Toolkit.formField;
 
 @RequiredArgsConstructor
 public class CategoryDetailsWidget extends StyledElement<CategoryDetailsWidget> {
@@ -35,7 +34,7 @@ public class CategoryDetailsWidget extends StyledElement<CategoryDetailsWidget> 
             .constraints(
                     Constraint.length(1), // ID
                     Constraint.length(1), // Type
-                    Constraint.length(5)  // Name (editable)
+                    Constraint.length(5) // Name (editable)
             );
 
     private static final Layout innerRowLayout = Layout.horizontal().constraints(
@@ -54,8 +53,7 @@ public class CategoryDetailsWidget extends StyledElement<CategoryDetailsWidget> 
 
         frame.renderWidget(
                 Paragraph.from(Span.raw("ID: ").bold()),
-                idFieldInnerAreas.getFirst()
-        );
+                idFieldInnerAreas.getFirst());
 
         if (selectedCategory != null) {
             frame.renderWidget(
@@ -63,38 +61,44 @@ public class CategoryDetailsWidget extends StyledElement<CategoryDetailsWidget> 
                             CharWidth.truncateWithEllipsis(
                                     selectedCategory.getId(),
                                     idFieldInnerAreas.getLast().width(),
-                                    CharWidth.TruncatePosition.END
-                            )
-                    ),
-                    idFieldInnerAreas.getLast()
-            );
+                                    CharWidth.TruncatePosition.END)),
+                    idFieldInnerAreas.getLast());
         }
 
         List<Rect> typeFieldInnerAreas = innerRowLayout.split(areas.get(1));
 
         frame.renderWidget(
                 Paragraph.from(Span.raw("Type: ").bold()),
-                typeFieldInnerAreas.getFirst()
-        );
+                typeFieldInnerAreas.getFirst());
 
-        FormFieldElement selectTypeField = formField("", controller.getForm().selectField(InputFields.CATEGORY_TYPE.getFieldName()))
-                .formState(controller.getForm(), InputFields.CATEGORY_TYPE.getFieldName())
-                .id(InputFields.CATEGORY_TYPE.getFieldId())
-                .labelWidth(Size.ZERO.width())
-                .spacing(Size.ZERO.width())
-                .focusable()
-                .on(KeyTrigger.key(KeyCode.ENTER), e -> controller.createOrUpdateCategory());
+        if (selectedCategory == null) {
 
-        renderContext.renderChild(selectTypeField, frame, typeFieldInnerAreas.get(1));
+            FormFieldElement selectTypeField = formField("",
+                    controller.getForm().selectField(InputFields.CATEGORY_TYPE.getFieldName()))
+                    .formState(controller.getForm(), InputFields.CATEGORY_TYPE.getFieldName())
+                    .id(InputFields.CATEGORY_TYPE.getFieldId())
+                    .labelWidth(Size.ZERO.width())
+                    .spacing(Size.ZERO.width())
+                    .focusable();
+
+            renderContext.renderChild(selectTypeField, frame, typeFieldInnerAreas.getLast());
+
+        } else {
+
+            frame.renderWidget(
+                    Paragraph.from(Span.raw(selectedCategory.getType().toString())),
+                    typeFieldInnerAreas.getLast());
+
+        }
 
         List<Rect> nameFieldInnerAreas = innerRowLayout.split(areas.get(2));
 
         frame.renderWidget(
                 Paragraph.from(Span.raw("Name: ").bold()),
-                nameFieldInnerAreas.getFirst()
-        );
+                nameFieldInnerAreas.getFirst());
 
-        FormFieldElement nameField = formField("", controller.getForm().textField(InputFields.CATEGORY_NAME.getFieldName()))
+        FormFieldElement nameField = formField("",
+                controller.getForm().textField(InputFields.CATEGORY_NAME.getFieldName()))
                 .formState(controller.getForm(), InputFields.CATEGORY_NAME.getFieldName())
                 .id(InputFields.CATEGORY_NAME.getFieldId())
                 .focusable()
@@ -106,8 +110,7 @@ public class CategoryDetailsWidget extends StyledElement<CategoryDetailsWidget> 
                 .placeholder("Enter category name")
                 .validate(
                         Validators.required("Name cannot be empty"),
-                        Validators.minLength(3, "Too short")
-                )
+                        Validators.minLength(3, "Too short"))
                 .errorBorderColor(Color.RED)
                 .showInlineErrors(true)
                 .onSubmit(controller::createOrUpdateCategory);
