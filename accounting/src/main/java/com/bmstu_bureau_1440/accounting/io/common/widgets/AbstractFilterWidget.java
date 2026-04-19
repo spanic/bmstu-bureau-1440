@@ -50,10 +50,10 @@ public abstract class AbstractFilterWidget extends StyledElement<AbstractFilterW
             return;
         }
 
-        Integer selected = listState.selected();
-        if (selected == null) {
+        Integer selectedIdx = listState.selected();
+        if (selectedIdx == null) {
             listState.selectFirst();
-        } else if (selected >= items.size()) {
+        } else if (selectedIdx >= items.size()) {
             listState.selectLast(items.size());
         }
     }

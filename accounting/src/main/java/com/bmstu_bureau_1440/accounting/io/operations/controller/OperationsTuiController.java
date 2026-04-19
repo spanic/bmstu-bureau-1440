@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -16,11 +17,13 @@ import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import com.bmstu_bureau_1440.accounting.models.Category;
 import com.bmstu_bureau_1440.accounting.models.Operation;
+import com.bmstu_bureau_1440.accounting.models.OperationType;
 import com.bmstu_bureau_1440.accounting.services.AccountsService;
 import com.bmstu_bureau_1440.accounting.services.CategoriesService;
 import com.bmstu_bureau_1440.accounting.services.OperationsService;
 
 import dev.tamboui.widgets.form.FormState;
+import dev.tamboui.widgets.form.FormState.Builder;
 import dev.tamboui.widgets.table.TableState;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,11 +50,13 @@ public class OperationsTuiController {
     @Getter
     private Operation selectedOperation;
 
-    private static final String NO_ACCOUNTS_OPTION = "No accounts";
-    private static final String NO_CATEGORIES_OPTION = "No categories";
+    private static final String EMPTY_OPTION = "Empty";
+    private static final String DELETED_ENTITY_NAME = "[Deleted]";
+
     private FormState form;
-    private List<String> lastAccountOptions = List.of();
-    private List<String> lastCategoryOptions = List.of();
+
+    private List<String> cachedAccountOptions = List.of();
+    private List<String> cachedCategoryOptions = List.of();
 
     public OperationsTuiController(Storage storage,
             OperationsService operationsService,
@@ -61,15 +66,6 @@ public class OperationsTuiController {
         this.operationsService = operationsService;
         this.accountsService = accountsService;
         this.categoriesService = categoriesService;
-
-        this.form = buildFormState(
-                null,
-                null,
-                BigDecimal.ZERO.toPlainString(),
-                StringUtils.EMPTY);
-        this.lastAccountOptions = List.copyOf(form.selectField(InputFields.OPERATION_ACCOUNT.getFieldName()).options());
-        this.lastCategoryOptions = List
-                .copyOf(form.selectField(InputFields.OPERATION_CATEGORY.getFieldName()).options());
     }
 
     // Queries
@@ -84,18 +80,17 @@ public class OperationsTuiController {
     }
 
     public List<BankAccount> getAccounts() {
-        syncOperationFormSelectOptions();
         selectedAccountIds.retainAll(storage.getAccounts().stream().map(BankAccount::getId).toList());
         return storage.getAccounts();
     }
 
     public List<Category> getCategories() {
-        syncOperationFormSelectOptions();
         selectedCategoryIds.retainAll(storage.getCategories().stream().map(Category::getId).toList());
         return storage.getCategories();
     }
 
     public FormState getForm() {
+        rebuildFormWithCurrentValues();
         return form;
     }
 
@@ -119,33 +114,34 @@ public class OperationsTuiController {
     public void selectPreviousOperation() {
         operationsTableState.selectPrevious();
         selectedOperation = TuiUtils.getSelectedObject(operationsTableState, getOperations());
-        updateEditOperationForm();
+        rebuildFormWithSelectedOperationData();
         setRemoveOperationDialogVisible(false);
     }
 
     public void selectNextOperation() {
         operationsTableState.selectNext(getOperations().size());
         selectedOperation = TuiUtils.getSelectedObject(operationsTableState, getOperations());
-        updateEditOperationForm();
+        rebuildFormWithSelectedOperationData();
         setRemoveOperationDialogVisible(false);
     }
 
     public void clearOperationSelection() {
         operationsTableState.clearSelection();
         selectedOperation = null;
-        updateEditOperationForm();
+        rebuildFormWithSelectedOperationData();
+    }
+
+    private void selectFirstOperation() {
+        operationsTableState.selectFirst();
+        selectedOperation = TuiUtils.getSelectedObject(operationsTableState, getOperations());
+        rebuildFormWithSelectedOperationData();
     }
 
     public void createOrUpdateOperation() {
-        syncOperationFormSelectOptions();
         String accountId = form.selectValue(InputFields.OPERATION_ACCOUNT.getFieldName());
         String categoryId = form.selectValue(InputFields.OPERATION_CATEGORY.getFieldName());
-        BigDecimal amount = new BigDecimal(getForm().textValue(InputFields.OPERATION_AMOUNT.getFieldName()));
-        String description = getForm().textValue(InputFields.OPERATION_DESCRIPTION.getFieldName());
-
-        if (NO_ACCOUNTS_OPTION.equals(accountId) || NO_CATEGORIES_OPTION.equals(categoryId)) {
-            return;
-        }
+        BigDecimal amount = new BigDecimal(form.textValue(InputFields.OPERATION_AMOUNT.getFieldName()));
+        String description = form.textValue(InputFields.OPERATION_DESCRIPTION.getFieldName());
 
         if (ObjectUtils.isNotEmpty(selectedOperation)) {
             selectedOperation.setDescription(description);
@@ -175,7 +171,7 @@ public class OperationsTuiController {
             }
         } else {
             selectedOperation = TuiUtils.getSelectedObject(operationsTableState, getOperations());
-            updateEditOperationForm();
+            rebuildFormWithSelectedOperationData();
         }
 
     }
@@ -186,7 +182,7 @@ public class OperationsTuiController {
         } else {
             selectedAccountIds.add(accountId);
         }
-        clearOperationSelection();
+        selectFirstOperation();
     }
 
     public void toggleCategorySelection(String categoryId) {
@@ -195,43 +191,27 @@ public class OperationsTuiController {
         } else {
             selectedCategoryIds.add(categoryId);
         }
-        clearOperationSelection();
+        selectFirstOperation();
     }
 
-    private void updateEditOperationForm() {
-        syncOperationFormSelectOptions();
-
+    private void rebuildFormWithSelectedOperationData() {
         final String selectedAccountId = selectedOperation == null ? null : selectedOperation.getBankAccountId();
         final String selectedCategoryId = selectedOperation == null ? null : selectedOperation.getCategoryId();
+        final String amount = selectedOperation == null ? BigDecimal.ZERO.toPlainString()
+                : selectedOperation.getAmount().toString();
+        final String description = selectedOperation == null ? StringUtils.EMPTY : selectedOperation.getDescription();
 
-        final int accountIndex = selectedAccountId == null
-                ? 0
-                : getAccountsSelectValues().indexOf(selectedAccountId);
-        if (accountIndex >= 0) {
-            form.selectField(InputFields.OPERATION_ACCOUNT.getFieldName()).selectIndex(accountIndex);
-        }
+        this.form = buildForm(selectedAccountId, selectedCategoryId, amount, description);
 
-        final int categoryIndex = selectedCategoryId == null
-                ? 0
-                : getCategoriesSelectValues().indexOf(selectedCategoryId);
-        if (categoryIndex >= 0) {
-            form.selectField(InputFields.OPERATION_CATEGORY.getFieldName()).selectIndex(categoryIndex);
-        }
-
-        form.setTextValue(InputFields.OPERATION_DESCRIPTION.getFieldName(),
-                selectedOperation == null ? StringUtils.EMPTY : selectedOperation.getDescription());
-        form.textField(InputFields.OPERATION_DESCRIPTION.getFieldName()).moveCursorToEnd();
-
-        form.setTextValue(InputFields.OPERATION_AMOUNT.getFieldName(),
-                selectedOperation == null ? BigDecimal.ZERO.toPlainString() : selectedOperation.getAmount().toString());
-        form.textField(InputFields.OPERATION_AMOUNT.getFieldName()).moveCursorToEnd();
+        this.form.textField(InputFields.OPERATION_DESCRIPTION.getFieldName()).moveCursorToEnd();
+        this.form.textField(InputFields.OPERATION_AMOUNT.getFieldName()).moveCursorToEnd();
     }
 
-    public void syncOperationFormSelectOptions() {
+    public void rebuildFormWithCurrentValues() {
         final List<String> accountOptions = getAccountsSelectValues();
         final List<String> categoryOptions = getCategoriesSelectValues();
 
-        if (accountOptions.equals(lastAccountOptions) && categoryOptions.equals(lastCategoryOptions)) {
+        if (accountOptions.equals(cachedAccountOptions) && categoryOptions.equals(cachedCategoryOptions)) {
             return;
         }
 
@@ -240,28 +220,38 @@ public class OperationsTuiController {
         final String currentAmount = form.textValue(InputFields.OPERATION_AMOUNT.getFieldName());
         final String currentDescription = form.textValue(InputFields.OPERATION_DESCRIPTION.getFieldName());
 
-        this.form = buildFormState(currentAccountId, currentCategoryId, currentAmount, currentDescription);
-        this.lastAccountOptions = List.copyOf(accountOptions);
-        this.lastCategoryOptions = List.copyOf(categoryOptions);
+        this.form = buildForm(currentAccountId, currentCategoryId, currentAmount, currentDescription);
+
+        this.cachedAccountOptions = List.copyOf(accountOptions);
+        this.cachedCategoryOptions = List.copyOf(categoryOptions);
     }
 
-    private FormState buildFormState(String selectedAccountId, String selectedCategoryId, String amount,
+    private FormState buildForm(String selectedAccountId, String selectedCategoryId, String amount,
             String description) {
         final List<String> accountOptions = getAccountsSelectValues();
         final List<String> categoryOptions = getCategoriesSelectValues();
 
-        final FormState state = FormState.builder()
+        final Builder builder = FormState.builder()
                 .selectField(InputFields.OPERATION_ACCOUNT.getFieldName(), accountOptions)
                 .selectField(InputFields.OPERATION_CATEGORY.getFieldName(), categoryOptions)
                 .textField(InputFields.OPERATION_AMOUNT.getFieldName(), amount)
-                .textField(InputFields.OPERATION_DESCRIPTION.getFieldName(), description)
-                .build();
+                .textField(InputFields.OPERATION_DESCRIPTION.getFieldName(), description);
 
         final int accountIndex = accountOptions.indexOf(selectedAccountId);
+
+        if (accountIndex < 0) {
+            builder.selectField(InputFields.OPERATION_ACCOUNT.getFieldName(), List.of(DELETED_ENTITY_NAME));
+        }
+        final int categoryIndex = categoryOptions.indexOf(selectedCategoryId);
+
+        if (categoryIndex < 0) {
+            builder.selectField(InputFields.OPERATION_CATEGORY.getFieldName(), List.of(DELETED_ENTITY_NAME));
+        }
+
+        FormState state = builder.build();
+
         state.selectField(InputFields.OPERATION_ACCOUNT.getFieldName())
                 .selectIndex(accountIndex >= 0 ? accountIndex : 0);
-
-        final int categoryIndex = categoryOptions.indexOf(selectedCategoryId);
         state.selectField(InputFields.OPERATION_CATEGORY.getFieldName())
                 .selectIndex(categoryIndex >= 0 ? categoryIndex : 0);
 
@@ -271,7 +261,7 @@ public class OperationsTuiController {
     private List<String> getAccountsSelectValues() {
         final List<String> options = new ArrayList<>(storage.getAccounts().stream().map(BankAccount::getId).toList());
         if (options.isEmpty()) {
-            options.add(NO_ACCOUNTS_OPTION);
+            options.add(EMPTY_OPTION);
         }
         return options;
     }
@@ -279,17 +269,25 @@ public class OperationsTuiController {
     private List<String> getCategoriesSelectValues() {
         final List<String> options = new ArrayList<>(storage.getCategories().stream().map(Category::getId).toList());
         if (options.isEmpty()) {
-            options.add(NO_CATEGORIES_OPTION);
+            options.add(EMPTY_OPTION);
         }
         return options;
     }
 
     public BankAccount getAccountById(String id) {
-        return accountsService.getAccountById(id);
+        try {
+            return accountsService.getAccountById(id);
+        } catch (NoSuchElementException ignored) {
+            return new BankAccount(DELETED_ENTITY_NAME, BigDecimal.ZERO);
+        }
     }
 
     public Category getCategoryById(String id) {
-        return categoriesService.getCategoryById(id);
+        try {
+            return categoriesService.getCategoryById(id);
+        } catch (NoSuchElementException ignored) {
+            return new Category(OperationType.UNKNOWN, DELETED_ENTITY_NAME);
+        }
     }
 
 }

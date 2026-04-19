@@ -74,7 +74,6 @@ public class AccountingTUI extends ToolkitApp {
         accountsController.selectNextAccount();
         categoriesController.selectNextCategory();
         operationsController.selectNextOperation();
-        operationsController.syncOperationFormSelectOptions();
     }
 
     @Override
