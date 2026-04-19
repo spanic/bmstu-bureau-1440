@@ -3,6 +3,8 @@ package com.bmstu_bureau_1440.accounting.io.operations.view;
 import java.util.List;
 import java.util.function.Function;
 
+import org.springframework.stereotype.Component;
+
 import com.bmstu_bureau_1440.accounting.io.common.Column;
 import com.bmstu_bureau_1440.accounting.io.common.widgets.AbstractTableWidget;
 import com.bmstu_bureau_1440.accounting.io.common.widgets.ConfirmationDialogWidget;
@@ -17,6 +19,7 @@ import dev.tamboui.toolkit.event.EventResult;
 import dev.tamboui.tui.event.KeyEvent;
 import dev.tamboui.widgets.table.TableState;
 
+@Component
 public class OperationsTableWidget extends AbstractTableWidget<Operation, OperationsTuiController> {
 
     public OperationsTableWidget(OperationsTuiController controller) {

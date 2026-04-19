@@ -2,6 +2,8 @@ package com.bmstu_bureau_1440.accounting.io.operations.view;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.bmstu_bureau_1440.accounting.io.common.ItemData;
 import com.bmstu_bureau_1440.accounting.io.common.ItemData.Status;
 import com.bmstu_bureau_1440.accounting.io.common.widgets.AbstractFilterWidget;
@@ -9,6 +11,7 @@ import com.bmstu_bureau_1440.accounting.io.operations.controller.OperationsTuiCo
 
 import lombok.RequiredArgsConstructor;
 
+@Component
 @RequiredArgsConstructor
 public class CategoriesSelectorFilterWidget extends AbstractFilterWidget {
 

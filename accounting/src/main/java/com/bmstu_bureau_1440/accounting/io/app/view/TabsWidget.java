@@ -1,6 +1,9 @@
 package com.bmstu_bureau_1440.accounting.io.app.view;
 
+import org.springframework.stereotype.Component;
+
 import com.bmstu_bureau_1440.accounting.io.app.controller.AccountingTuiController;
+
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;
 import dev.tamboui.style.Style;
@@ -16,6 +19,7 @@ import dev.tamboui.widgets.block.BorderType;
 import dev.tamboui.widgets.block.Borders;
 import dev.tamboui.widgets.tabs.Tabs;
 
+@Component
 public class TabsWidget extends StyledElement<TabsWidget> {
 
     private final AccountingTuiController controller;
@@ -45,8 +49,7 @@ public class TabsWidget extends StyledElement<TabsWidget> {
                 .block(Block.builder()
                         .borders(Borders.ALL)
                         .borderType(BorderType.PLAIN)
-                        .borderStyle(Style.EMPTY.fg(renderContext.isFocused(this.id()) ?
-                                Color.MAGENTA : Color.GREEN))
+                        .borderStyle(Style.EMPTY.fg(renderContext.isFocused(this.id()) ? Color.MAGENTA : Color.GREEN))
                         .build())
                 .build();
 

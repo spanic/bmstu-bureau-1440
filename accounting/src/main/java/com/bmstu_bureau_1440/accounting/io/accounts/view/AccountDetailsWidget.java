@@ -1,9 +1,16 @@
 package com.bmstu_bureau_1440.accounting.io.accounts.view;
 
+import static dev.tamboui.toolkit.Toolkit.formField;
+
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.bmstu_bureau_1440.accounting.io.accounts.controller.AccountsTuiController;
 import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
+
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Flex;
 import dev.tamboui.layout.Layout;
@@ -21,10 +28,7 @@ import dev.tamboui.widgets.form.Validators;
 import dev.tamboui.widgets.paragraph.Paragraph;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
-import static dev.tamboui.toolkit.Toolkit.formField;
-
+@Component
 @RequiredArgsConstructor
 public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
@@ -34,7 +38,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
             .constraints(
                     Constraint.length(1), // ID
                     Constraint.length(5), // Name (editable)
-                    Constraint.length(5)  // Balance (editable)
+                    Constraint.length(5) // Balance (editable)
             );
 
     private static final Layout innerRowLayout = Layout.horizontal().constraints(
@@ -52,8 +56,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
         frame.renderWidget(
                 Paragraph.from(Span.raw("ID: ").bold()),
-                idFieldInnerAreas.getFirst()
-        );
+                idFieldInnerAreas.getFirst());
 
         if (selectedBankAccount != null) {
             frame.renderWidget(
@@ -61,21 +64,18 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
                             CharWidth.truncateWithEllipsis(
                                     selectedBankAccount.getId(),
                                     idFieldInnerAreas.getLast().width(),
-                                    CharWidth.TruncatePosition.END
-                            )
-                    ),
-                    idFieldInnerAreas.getLast()
-            );
+                                    CharWidth.TruncatePosition.END)),
+                    idFieldInnerAreas.getLast());
         }
 
         List<Rect> nameFieldInnerAreas = innerRowLayout.split(areas.get(1));
 
         frame.renderWidget(
                 Paragraph.from(Span.raw("Name: ").bold()),
-                nameFieldInnerAreas.getFirst()
-        );
+                nameFieldInnerAreas.getFirst());
 
-        FormFieldElement nameField = formField("", controller.getForm().textField(InputFields.ACCOUNT_NAME.getFieldName()))
+        FormFieldElement nameField = formField("",
+                controller.getForm().textField(InputFields.ACCOUNT_NAME.getFieldName()))
                 .formState(controller.getForm(), InputFields.ACCOUNT_NAME.getFieldName())
                 .id(InputFields.ACCOUNT_NAME.getFieldId())
                 .focusable()
@@ -87,8 +87,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
                 .placeholder("Enter account name")
                 .validate(
                         Validators.required("Name cannot be empty"),
-                        Validators.minLength(3, "Too short")
-                )
+                        Validators.minLength(3, "Too short"))
                 .errorBorderColor(Color.RED)
                 .showInlineErrors(true)
                 .onSubmit(controller::createOrUpdateAccount);
@@ -101,8 +100,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
 
         frame.renderWidget(
                 Paragraph.from(Span.raw("Balance: ").bold()),
-                balanceInnerAreas.getFirst()
-        );
+                balanceInnerAreas.getFirst());
 
         if (selectedBankAccount != null) {
 
@@ -110,15 +108,14 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
                     Paragraph.from(
                             Line.from(
                                     Span.raw("₽").yellow().bold(),
-                                    Span.raw(selectedBankAccount.getBalance().toString()).yellow().bold()
-                            )
-                    ),
-                    balanceInnerAreas.getLast()
-            );
+                                    Span.raw(selectedBankAccount.getBalance()
+                                            .toString()).yellow().bold())),
+                    balanceInnerAreas.getLast());
 
         } else {
 
-            FormFieldElement balanceField = formField("", controller.getForm().textField(InputFields.ACCOUNT_BALANCE.getFieldName()))
+            FormFieldElement balanceField = formField("",
+                    controller.getForm().textField(InputFields.ACCOUNT_BALANCE.getFieldName()))
                     .formState(controller.getForm(), InputFields.ACCOUNT_BALANCE.getFieldName())
                     .id(InputFields.ACCOUNT_BALANCE.getFieldId())
                     .focusable()
@@ -130,8 +127,7 @@ public class AccountDetailsWidget extends StyledElement<AccountDetailsWidget> {
                     .placeholder("Enter initial balance")
                     .validate(
                             Validators.minLength(1, "Cannot be empty"),
-                            Validators.pattern("^\\d+\\.?\\d*$", "Only digits are allowed")
-                    )
+                            Validators.pattern("^\\d+\\.?\\d*$", "Only digits are allowed"))
                     .errorBorderColor(Color.RED)
                     .showInlineErrors(true)
                     .onSubmit(controller::createOrUpdateAccount);

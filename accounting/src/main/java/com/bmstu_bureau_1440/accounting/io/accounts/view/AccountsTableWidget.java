@@ -1,10 +1,16 @@
 package com.bmstu_bureau_1440.accounting.io.accounts.view;
 
+import java.util.List;
+import java.util.function.Function;
+
+import org.springframework.stereotype.Component;
+
 import com.bmstu_bureau_1440.accounting.io.accounts.controller.AccountsTuiController;
 import com.bmstu_bureau_1440.accounting.io.common.Column;
 import com.bmstu_bureau_1440.accounting.io.common.widgets.AbstractTableWidget;
 import com.bmstu_bureau_1440.accounting.io.common.widgets.ConfirmationDialogWidget;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
+
 import dev.tamboui.layout.Constraint;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.terminal.Frame;
@@ -13,9 +19,7 @@ import dev.tamboui.toolkit.event.EventResult;
 import dev.tamboui.tui.event.KeyEvent;
 import dev.tamboui.widgets.table.TableState;
 
-import java.util.List;
-import java.util.function.Function;
-
+@Component
 public class AccountsTableWidget extends AbstractTableWidget<BankAccount, AccountsTuiController> {
 
     public AccountsTableWidget(AccountsTuiController controller) {
@@ -32,8 +36,7 @@ public class AccountsTableWidget extends AbstractTableWidget<BankAccount, Accoun
         return List.of(
                 new Column<>("ID", Constraint.percentage(40), BankAccount::getId),
                 new Column<>("Name", Constraint.fill(), BankAccount::getName),
-                new Column<>("Balance (₽)", Constraint.percentage(20), account -> account.getBalance().toString())
-        );
+                new Column<>("Balance (₽)", Constraint.percentage(20), account -> account.getBalance().toString()));
     }
 
     @Override
@@ -50,8 +53,7 @@ public class AccountsTableWidget extends AbstractTableWidget<BankAccount, Accoun
                     new ConfirmationDialogWidget(controller::removeAccount, () -> {
                         controller.setRemoveAccountDialogVisible(false);
                     }),
-                    frame, rect
-            );
+                    frame, rect);
         }
     }
 

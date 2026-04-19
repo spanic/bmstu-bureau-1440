@@ -26,8 +26,10 @@ import com.bmstu_bureau_1440.accounting.io.operations.view.TotalSummaryWidget;
 import dev.tamboui.style.Color;
 import dev.tamboui.toolkit.app.ToolkitApp;
 import dev.tamboui.toolkit.element.Element;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class AccountingTUI extends ToolkitApp {
 
     private final AccountingTuiController controller;
@@ -45,32 +47,6 @@ public class AccountingTUI extends ToolkitApp {
     private final OperationsTableWidget operationsTable;
     private final OperationsDetailsWidget operationsDetailsWidget;
     private final TotalSummaryWidget totalSummaryWidget;
-
-    public AccountingTUI(AccountingTuiController controller,
-            AccountsTuiController accountsController,
-            CategoriesTuiController categoriesController,
-            OperationsTuiController operationsController) {
-        this.controller = controller;
-        this.accountsController = accountsController;
-        this.categoriesController = categoriesController;
-        this.operationsController = operationsController;
-
-        // TODO: seems like it's also a good option to use DI here
-
-        this.mainNavigationTabs = new TabsWidget(controller);
-
-        this.accountsTable = new AccountsTableWidget(accountsController);
-        this.accountDetailsWidget = new AccountDetailsWidget(accountsController);
-
-        this.categoriesTable = new CategoriesTableWidget(categoriesController);
-        this.categoryDetailsWidget = new CategoryDetailsWidget(categoriesController);
-
-        this.accountsFilter = new AccountsSelectorFilterWidget(operationsController);
-        this.categoriesFilter = new CategoriesSelectorFilterWidget(operationsController);
-        this.operationsTable = new OperationsTableWidget(operationsController);
-        this.operationsDetailsWidget = new OperationsDetailsWidget(operationsController);
-        this.totalSummaryWidget = new TotalSummaryWidget(operationsController);
-    }
 
     @Override
     protected void onStart() {

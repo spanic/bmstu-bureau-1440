@@ -5,6 +5,7 @@ import static dev.tamboui.toolkit.Toolkit.formField;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.io.operations.controller.OperationsTuiController;
@@ -29,6 +30,7 @@ import dev.tamboui.widgets.form.Validators;
 import dev.tamboui.widgets.paragraph.Paragraph;
 import lombok.RequiredArgsConstructor;
 
+@Component
 @RequiredArgsConstructor
 public class OperationsDetailsWidget extends StyledElement<OperationsDetailsWidget> {
 

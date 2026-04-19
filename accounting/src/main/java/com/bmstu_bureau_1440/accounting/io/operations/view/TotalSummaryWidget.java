@@ -1,5 +1,7 @@
 package com.bmstu_bureau_1440.accounting.io.operations.view;
 
+import org.springframework.stereotype.Component;
+
 import com.bmstu_bureau_1440.accounting.io.operations.controller.OperationsTuiController;
 
 import dev.tamboui.layout.Rect;
@@ -15,6 +17,7 @@ import dev.tamboui.toolkit.element.StyledElement;
 import dev.tamboui.widgets.paragraph.Paragraph;
 import lombok.RequiredArgsConstructor;
 
+@Component
 @RequiredArgsConstructor
 public class TotalSummaryWidget extends StyledElement<TotalSummaryWidget> {
 
@@ -26,14 +29,22 @@ public class TotalSummaryWidget extends StyledElement<TotalSummaryWidget> {
         final Paragraph paragraph = Paragraph.from(
                 Text.from(
                         Line.from(
-                                new Span("Total balance: ", Style.EMPTY.fg(Color.YELLOW).bold()),
-                                Span.raw(controller.getAnalytics().totalBalance().toString())),
+                                new Span("Total balance: ",
+                                        Style.EMPTY.fg(Color.YELLOW).bold()),
+                                Span.raw(controller.getAnalytics().totalBalance()
+                                        .toString())),
                         Line.from(
-                                new Span("Total income: ", Style.EMPTY.fg(Color.LIGHT_CYAN).bold()),
-                                Span.raw(controller.getAnalytics().totalIncome().toString())),
+                                new Span("Total income: ",
+                                        Style.EMPTY.fg(Color.LIGHT_CYAN)
+                                                .bold()),
+                                Span.raw(controller.getAnalytics().totalIncome()
+                                        .toString())),
                         Line.from(
-                                new Span("Total expenses: ", Style.EMPTY.fg(Color.BRIGHT_WHITE).bold()),
-                                Span.raw(controller.getAnalytics().totalExpenses().toString()))));
+                                new Span("Total expenses: ",
+                                        Style.EMPTY.fg(Color.BRIGHT_WHITE)
+                                                .bold()),
+                                Span.raw(controller.getAnalytics().totalExpenses()
+                                        .toString()))));
 
         frame.renderWidget(paragraph, area);
     }

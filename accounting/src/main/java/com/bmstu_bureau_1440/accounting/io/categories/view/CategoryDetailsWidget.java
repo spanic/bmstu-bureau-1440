@@ -4,6 +4,8 @@ import static dev.tamboui.toolkit.Toolkit.formField;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.bmstu_bureau_1440.accounting.io.categories.controller.CategoriesTuiController;
 import com.bmstu_bureau_1440.accounting.io.common.utils.TuiUtils;
 import com.bmstu_bureau_1440.accounting.io.shared.InputFields;
@@ -25,6 +27,7 @@ import dev.tamboui.widgets.form.Validators;
 import dev.tamboui.widgets.paragraph.Paragraph;
 import lombok.RequiredArgsConstructor;
 
+@Component
 @RequiredArgsConstructor
 public class CategoryDetailsWidget extends StyledElement<CategoryDetailsWidget> {
 
