@@ -1,8 +1,8 @@
 package com.bmstu_bureau_1440;
 
 import com.bmstu_bureau_1440.banking.*;
-import com.bmstu_bureau_1440.io.IO;
 import com.bmstu_bureau_1440.io.Operation;
+import com.bmstu_bureau_1440.shared.io.IO;
 
 public class Main {
 

@@ -1,6 +1,6 @@
 package io;
 
-import com.bmstu_bureau_1440.io.IOperation;
+import com.bmstu_bureau_1440.shared.io.IOperation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
