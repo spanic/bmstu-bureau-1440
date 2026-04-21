@@ -1,0 +1,3 @@
+id,bankAccountId,categoryId,amount,date,description
+"a3a0d056-b49b-4969-b2f7-ff77b23d4a8b","57571dc4-b7c7-405d-8d51-f63789d73ebe","7f466bd2-7854-4154-b351-1017ed3ade13",20,"2026-04-22T01:47:56.884447","Test operation"
+"f091e475-b7a4-447d-bb1d-7af75a4d6d43","4e1d536c-896f-4857-bbb6-38eafeba4d36","f8c20206-68fb-4b5b-8a3b-48b8967a42fd",0,"2026-04-22T01:47:56.884508","Test operation"

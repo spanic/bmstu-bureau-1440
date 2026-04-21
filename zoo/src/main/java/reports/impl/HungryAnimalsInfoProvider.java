@@ -1,7 +1,7 @@
 package reports.impl;
 
 import animals.Animal;
-import com.bmstu_bureau_1440.io.IO;
+import com.bmstu_bureau_1440.shared.io.IO;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import reports.ProvidesInfo;
