@@ -3,8 +3,8 @@ import animals.Region;
 import animals.impl.Parrot;
 import animals.impl.Shark;
 import animals.impl.Tiger;
-import com.bmstu_bureau_1440.io.IO;
-import com.bmstu_bureau_1440.io.IOperation;
+import com.bmstu_bureau_1440.shared.io.IO;
+import com.bmstu_bureau_1440.shared.io.IOperation;
 import facilities.Home;
 import io.Operation;
 import reports.ReportGenerator;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.bmstu_bureau_1440.io.Operation.EXIT;
+import static com.bmstu_bureau_1440.shared.io.Operation.EXIT;
 
 public class Main {
 

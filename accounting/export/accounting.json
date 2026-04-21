@@ -1,0 +1,55 @@
+{
+  "operations" : [ {
+    "id" : "a3a0d056-b49b-4969-b2f7-ff77b23d4a8b",
+    "bankAccountId" : "57571dc4-b7c7-405d-8d51-f63789d73ebe",
+    "categoryId" : "7f466bd2-7854-4154-b351-1017ed3ade13",
+    "amount" : 20,
+    "date" : "2026-04-22T01:47:56.884447",
+    "description" : "Test operation"
+  }, {
+    "id" : "f091e475-b7a4-447d-bb1d-7af75a4d6d43",
+    "bankAccountId" : "4e1d536c-896f-4857-bbb6-38eafeba4d36",
+    "categoryId" : "f8c20206-68fb-4b5b-8a3b-48b8967a42fd",
+    "amount" : 0,
+    "date" : "2026-04-22T01:47:56.884508",
+    "description" : "Test operation"
+  } ],
+  "accounts" : [ {
+    "balance" : 994341.92,
+    "id" : "57571dc4-b7c7-405d-8d51-f63789d73ebe",
+    "name" : "My account"
+  }, {
+    "balance" : 1000.0,
+    "id" : "4e1d536c-896f-4857-bbb6-38eafeba4d36",
+    "name" : "Another account"
+  }, {
+    "balance" : 0.0,
+    "id" : "1cafc812-a55a-43fd-977f-34f376c1c660",
+    "name" : "My savings"
+  } ],
+  "categories" : [ {
+    "id" : "7f466bd2-7854-4154-b351-1017ed3ade13",
+    "type" : "DEPOSIT",
+    "name" : "Salary"
+  }, {
+    "id" : "f8c20206-68fb-4b5b-8a3b-48b8967a42fd",
+    "type" : "DEPOSIT",
+    "name" : "Gift"
+  }, {
+    "id" : "c53b6074-a962-4702-9577-b93d6824a44f",
+    "type" : "WITHDRAWAL",
+    "name" : "Food"
+  }, {
+    "id" : "2e212c20-90f4-4593-a657-91836f02735f",
+    "type" : "WITHDRAWAL",
+    "name" : "Transport"
+  }, {
+    "id" : "c64671ce-35f0-4c97-b1c8-1d3f23c08b4e",
+    "type" : "WITHDRAWAL",
+    "name" : "Entertainment"
+  }, {
+    "id" : "c841f7bf-1eb6-495f-b988-7d441ebfad09",
+    "type" : "WITHDRAWAL",
+    "name" : "Other"
+  } ]
+}
