@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import com.bmstu_bureau_1440.accounting.io.AccountingTUI;
 import com.bmstu_bureau_1440.accounting.models.BankAccount;
 import com.bmstu_bureau_1440.accounting.models.Category;
-import com.bmstu_bureau_1440.accounting.models.FileType;
 import com.bmstu_bureau_1440.accounting.models.Operation;
 import com.bmstu_bureau_1440.accounting.models.OperationType;
 import com.bmstu_bureau_1440.accounting.repositories.FileStorageRepository;
@@ -50,11 +49,11 @@ public class Application {
                                                 storage.getCategories().get(1).getId(), BigDecimal.ZERO,
                                                 "Test operation")));
 
-                repository.exportToFile(FileType.CSV);
-                repository.exportToFile(FileType.JSON);
-                repository.exportToFile(FileType.YAML);
+                // repository.exportToFile(FileType.CSV);
+                // repository.exportToFile(FileType.JSON);
+                // repository.exportToFile(FileType.YAML);
 
-                // tui.run();
+                tui.run();
         }
 
 }
