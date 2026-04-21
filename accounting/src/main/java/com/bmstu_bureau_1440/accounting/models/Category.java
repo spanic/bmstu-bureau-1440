@@ -2,17 +2,18 @@ package com.bmstu_bureau_1440.accounting.models;
 
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @EqualsAndHashCode
-@AllArgsConstructor
 public class Category {
 
     @Getter
-    private final String id = UUID.randomUUID().toString();
+    private final String id;
 
     @Getter
     @Setter
@@ -21,5 +22,19 @@ public class Category {
     @Getter
     @Setter
     private String name;
+
+    public Category(OperationType type, String name) {
+        this(UUID.randomUUID().toString(), type, name);
+    }
+
+    @JsonCreator
+    public Category(
+            @JsonProperty("id") String id,
+            @JsonProperty("type") OperationType type,
+            @JsonProperty("name") String name) {
+        this.id = id;
+        this.type = type;
+        this.name = name;
+    }
 
 }

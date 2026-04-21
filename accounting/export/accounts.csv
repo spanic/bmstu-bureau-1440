@@ -1,4 +1,4 @@
-"BALANCE","ID","NAME"
-"994341.92","c2e824fd-0265-4c51-93a4-ad131763560b","My account"
-"1000.0","6add47a5-7d2b-471b-a317-40b07a221ba8","Another account"
-"0.0","79608330-59d8-4835-a0d7-d2a4bef4cf3c","My savings"
+balance,id,name
+994341.92,"57571dc4-b7c7-405d-8d51-f63789d73ebe","My account"
+1000.0,"4e1d536c-896f-4857-bbb6-38eafeba4d36","Another account"
+0.0,"1cafc812-a55a-43fd-977f-34f376c1c660","My savings"

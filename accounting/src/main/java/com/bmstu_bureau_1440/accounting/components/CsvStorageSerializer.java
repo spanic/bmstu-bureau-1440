@@ -32,7 +32,7 @@ public class CsvStorageSerializer implements StorageSerializer {
     }
 
     @Override
-    @CheckIfReadable(filenames = { OPERATIONS_FILENAME })
+    @CheckIfReadable(filenames = { OPERATIONS_FILENAME, ACCOUNTS_FILENAME, CATEGORIES_FILENAME })
     public Storage deserialize(@NonNull Path path) throws Exception {
         var operations = csvSerializer.deserialize(
                 path.resolve(OPERATIONS_FILENAME),
@@ -54,14 +54,17 @@ public class CsvStorageSerializer implements StorageSerializer {
     public void serialize(@NonNull Storage object, @NonNull Path path) throws Exception {
         csvSerializer.serialize(
                 object.getOperations(),
+                Operation.class,
                 Files.createDirectories(path).resolve(OPERATIONS_FILENAME));
 
         csvSerializer.serialize(
                 object.getAccounts(),
+                BankAccount.class,
                 Files.createDirectories(path).resolve(ACCOUNTS_FILENAME));
 
         csvSerializer.serialize(
                 object.getCategories(),
+                Category.class,
                 Files.createDirectories(path).resolve(CATEGORIES_FILENAME));
     }
 

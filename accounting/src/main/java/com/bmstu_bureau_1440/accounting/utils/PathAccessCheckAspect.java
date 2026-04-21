@@ -1,24 +1,26 @@
 package com.bmstu_bureau_1440.accounting.utils;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 @Aspect
 @Component
 public class PathAccessCheckAspect {
 
-    @Before("@annotation(ensureWritable) && args(.., path)")
-    public void validateIfWritable(CheckIfWritable checkIfWritable, Path path) throws Throwable {
-        if (!Files.isWritable(path.getParent()))
+    @Before("@annotation(checkIfWritable) && args(.., path)")
+    public void validateIfWritable(CheckIfWritable checkIfWritable, Path path) {
+        Path parent = path.toAbsolutePath().getParent();
+
+        if (parent == null || !Files.isWritable(parent))
             throw new IllegalArgumentException("Cannot write into the specified location: " + path);
     }
 
-    @Before("@annotation(ensureReadable) && args(.., path)")
-    public void validateIfReadable(CheckIfReadable checkIfReadable, Path path) throws Throwable {
+    @Before("@annotation(checkIfReadable) && args(.., path)")
+    public void validateIfReadable(CheckIfReadable checkIfReadable, Path path) {
         final String[] filenames = checkIfReadable.filenames();
 
         for (String filename : filenames) {
