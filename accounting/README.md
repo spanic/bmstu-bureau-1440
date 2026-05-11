@@ -1,5 +1,25 @@
 # Модуль `accounting`
 
+- [Модуль `accounting`](#модуль-accounting)
+  - [Как запустить в режиме отладки?](#как-запустить-в-режиме-отладки)
+  - [Скриншоты](#скриншоты)
+  - [1. Предметная область](#1-предметная-область)
+  - [2. Единый code style](#2-единый-code-style)
+  - [3. Использованные паттерны](#3-использованные-паттерны)
+    - [3.1 Паттерн «Фабричный метод»](#31-паттерн-фабричный-метод)
+    - [3.2 Паттерн «Фасад»](#32-паттерн-фасад)
+    - [3.3 Паттерн «Команда»](#33-паттерн-команда)
+    - [3.4 Паттерн «Шаблонный метод»](#34-паттерн-шаблонный-метод)
+  - [4. Принципы SOLID](#4-принципы-solid)
+  - [5. Принципы GRASP](#5-принципы-grasp)
+  - [6. DI-контейнер](#6-di-контейнер)
+  - [7. CRUD для Accounts, Operations и Categories](#7-crud-для-accounts-operations-и-categories)
+  - [8. Группировка Operations по категориям / по счетам](#8-группировка-operations-по-категориям--по-счетам)
+  - [9. Вычисление суммы доходов и расходов](#9-вычисление-суммы-доходов-и-расходов)
+  - [10. Импорт / экспорт в CSV, JSON, YAML](#10-импорт--экспорт-в-csv-json-yaml)
+  - [11. Ситуации, в которых появятся проблемы при расширении](#11-ситуации-в-которых-появятся-проблемы-при-расширении)
+  - [12. Почему введённые абстракции улучшили качество дизайна](#12-почему-введённые-абстракции-улучшили-качество-дизайна)
+
 Данный модуль реализует консольное (TUI) приложение
 для учёта финансов с хранением состояния в памяти и возможностью
 сериализации в файлы различных форматов.
@@ -163,27 +183,27 @@ public abstract class AbstractTableWidget<T, K> extends StyledElement<AbstractTa
 
 ## 4. Принципы SOLID
 
-| Принцип | Где применён | Пример |
-|---|---|---|
-| **S**RP – единственная ответственность | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/services/AnalyticsService.java` | Класс занимается только подсчётом аналитики (общий баланс, доходы, расходы), не реализует логику обновления данных или построения пользовательского интерфейса. |
+| Принцип                                                 | Где применён                                                                                                            | Пример                                                                                                                                                                             |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **S**RP – единственная ответственность                  | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/services/AnalyticsService.java`                              | Класс занимается только подсчётом аналитики (общий баланс, доходы, расходы), не реализует логику обновления данных или построения пользовательского интерфейса.                    |
 | **O**CP – открыт для расширения, закрыт для модификации | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/components/StorageSerializer.java` + `FileStorageRepository` | Добавление нового формата (например, XML) реализуется добавлением нового `@Component`-сериализатора без изменения репозитория: Spring сам добавит его в `List<StorageSerializer>`. |
-| **L**SP – подстановка Барбары Лисков | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/io/common/widgets/AbstractTableWidget.java` | `AccountsTableWidget`, `CategoriesTableWidget`, `OperationsTableWidget` взаимозаменяемы там, где ожидается `AbstractTableWidget` (и подставляются в `AccountingTUI`). |
-| **I**SP – разделение интерфейсов | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/components/StorageSerializer.java` | Интерфейс сведён к трём методам, относящимся строго к сериализации; клиент не обязан знать про парсинг CSV, Jackson или аспекты. |
-| **D**IP – инверсия зависимостей | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/repositories/FileStorageRepository.java` | Репозиторий зависит от абстракции `StorageSerializer`, а не от `CsvStorageSerializer`/`JsonStorageSerializer`/`YamlStorageSerializer`. |
+| **L**SP – подстановка Барбары Лисков                    | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/io/common/widgets/AbstractTableWidget.java`                  | `AccountsTableWidget`, `CategoriesTableWidget`, `OperationsTableWidget` взаимозаменяемы там, где ожидается `AbstractTableWidget` (и подставляются в `AccountingTUI`).              |
+| **I**SP – разделение интерфейсов                        | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/components/StorageSerializer.java`                           | Интерфейс сведён к трём методам, относящимся строго к сериализации; клиент не обязан знать про парсинг CSV, Jackson или аспекты.                                                   |
+| **D**IP – инверсия зависимостей                         | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/repositories/FileStorageRepository.java`                     | Репозиторий зависит от абстракции `StorageSerializer`, а не от `CsvStorageSerializer`/`JsonStorageSerializer`/`YamlStorageSerializer`.                                             |
 
 ## 5. Принципы GRASP
 
-| Принцип | Где применён | Пример |
-|---|---|---|
-| Information Expert | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/services/AccountsService.java` | Всё, что касается состояния счёта (применение операции, изменение баланса), сосредоточено там, где есть информация о счёте. |
-| Creator | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/services/OperationsService.java` | `OperationsService` создаёт `Operation`, поскольку агрегирует необходимые данные (категорию, счёт, сумму) и немедленно сохраняет объект в `Storage`. |
-| Controller | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/io/operations/controller/OperationsTuiController.java` | Класс-контроллер принимает пользовательские события от виджетов и оркестрирует вызовы сервисов и обновление состояния. |
-| Low Coupling | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/repositories/FileStorageRepository.java` | Репозиторий связан с сериализаторами только через интерфейс `StorageSerializer`, а с моделью — через `Storage`. |
-| High Cohesion | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/services/CategoriesService.java` | Все методы касаются ровно одной темы — жизненного цикла `Category`. |
-| Polymorphism | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/components/JsonStorageSerializer.java` (и соседние) | Разные форматы реализованы как полиморфные реализации `StorageSerializer`, вместо `switch/if` по `FileType`. |
-| Pure Fabrication | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/components/CsvSerializer.java` | Не существует в предметной области, введён как технический помощник для работы с OpenCSV, чтобы разгрузить доменные классы. |
-| Indirection | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/utils/PathAccessCheckAspect.java` | AOP-аспект опосредует проверку доступа к путям между вызовом сериализатора и файловой системой, устраняя прямую зависимость сериализаторов от проверок. |
-| Protected Variations | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/components/StorageSerializer.java` | Интерфейс защищает клиентский код от изменения конкретного формата файла или используемой библиотеки сериализации. |
+| Принцип              | Где применён                                                                                                      | Пример                                                                                                                                                  |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Information Expert   | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/services/AccountsService.java`                         | Всё, что касается состояния счёта (применение операции, изменение баланса), сосредоточено там, где есть информация о счёте.                             |
+| Creator              | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/services/OperationsService.java`                       | `OperationsService` создаёт `Operation`, поскольку агрегирует необходимые данные (категорию, счёт, сумму) и немедленно сохраняет объект в `Storage`.    |
+| Controller           | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/io/operations/controller/OperationsTuiController.java` | Класс-контроллер принимает пользовательские события от виджетов и оркестрирует вызовы сервисов и обновление состояния.                                  |
+| Low Coupling         | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/repositories/FileStorageRepository.java`               | Репозиторий связан с сериализаторами только через интерфейс `StorageSerializer`, а с моделью — через `Storage`.                                         |
+| High Cohesion        | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/services/CategoriesService.java`                       | Все методы касаются ровно одной темы — жизненного цикла `Category`.                                                                                     |
+| Polymorphism         | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/components/JsonStorageSerializer.java` (и соседние)    | Разные форматы реализованы как полиморфные реализации `StorageSerializer`, вместо `switch/if` по `FileType`.                                            |
+| Pure Fabrication     | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/components/CsvSerializer.java`                         | Не существует в предметной области, введён как технический помощник для работы с OpenCSV, чтобы разгрузить доменные классы.                             |
+| Indirection          | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/utils/PathAccessCheckAspect.java`                      | AOP-аспект опосредует проверку доступа к путям между вызовом сериализатора и файловой системой, устраняя прямую зависимость сериализаторов от проверок. |
+| Protected Variations | `accounting/src/main/java/com/bmstu_bureau_1440/accounting/components/StorageSerializer.java`                     | Интерфейс защищает клиентский код от изменения конкретного формата файла или используемой библиотеки сериализации.                                      |
 
 ## 6. DI-контейнер
 
@@ -214,11 +234,11 @@ public class AppConfig {
 
 CRUD реализован для всех трёх сущностей (на уровне in-memory `Storage`):
 
-| Сущность | Create | Read | Update | Delete |
-|---|---|---|---|---|
-| `BankAccount` | `AccountsService.addNewBankAccount` | `AccountsService.getAccountById`, `AccountsTuiController.getAccounts` | `AccountsService.renameAccount`, изменение баланса через `applyOperation` | `AccountsService.deleteAccount` |
-| `Category` | `CategoriesService.addNewCategory` | `CategoriesService.getCategoryById`, `CategoriesTuiController.getCategories` | Переименование через `Category.setName` в `createOrUpdateCategory` | `CategoriesService.deleteCategory` |
-| `Operation` | `OperationsService.addNewOperation` (с автоматическим применением к счёту) | `OperationsTuiController.getOperations` (с фильтрацией) | Правка описания через `Operation.setDescription` в `createOrUpdateOperation` | `OperationsService.deleteOperation` (с откатом баланса) |
+| Сущность      | Create                                                                     | Read                                                                         | Update                                                                       | Delete                                                  |
+| ------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `BankAccount` | `AccountsService.addNewBankAccount`                                        | `AccountsService.getAccountById`, `AccountsTuiController.getAccounts`        | `AccountsService.renameAccount`, изменение баланса через `applyOperation`    | `AccountsService.deleteAccount`                         |
+| `Category`    | `CategoriesService.addNewCategory`                                         | `CategoriesService.getCategoryById`, `CategoriesTuiController.getCategories` | Переименование через `Category.setName` в `createOrUpdateCategory`           | `CategoriesService.deleteCategory`                      |
+| `Operation`   | `OperationsService.addNewOperation` (с автоматическим применением к счёту) | `OperationsTuiController.getOperations` (с фильтрацией)                      | Правка описания через `Operation.setDescription` в `createOrUpdateOperation` | `OperationsService.deleteOperation` (с откатом баланса) |
 
 Операции доступны в TUI: добавление через форму, удаление через `ConfirmationDialogWidget`,
 навигация стрелками, клавиша `d` — удалить, `c` — снять выделение и создать новый объект.
