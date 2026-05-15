@@ -27,6 +27,7 @@
         <module>zoo</module>
         <module>banking-app</module>
         <module>accounting</module>
+        <module>library</module>
     </modules>
 
     <properties>
