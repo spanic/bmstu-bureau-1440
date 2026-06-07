@@ -1,5 +1,6 @@
 package com.bmstu_bureau_1440.library.ui;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -7,12 +8,18 @@ import org.springframework.stereotype.Component;
 import com.bmstu_bureau_1440.library.ui.books.BooksOperationsSelector;
 import com.bmstu_bureau_1440.library.ui.models.MenuSelector;
 
+import jakarta.annotation.PostConstruct;
+
 @Component
 @Profile("runtime")
 public class LibraryConsoleUI extends MenuSelector implements CommandLineRunner {
 
-    {
-        executors.put(MainOperations.LIST_BOOKS_OPERATIONS, BooksOperationsSelector::new);
+    @Autowired
+    private BooksOperationsSelector booksSelector;
+
+    @PostConstruct
+    private void init() {
+        executors.put(MainOperations.LIST_BOOKS_OPERATIONS, booksSelector);
     }
 
     @Override

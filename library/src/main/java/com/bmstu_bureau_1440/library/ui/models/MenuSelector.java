@@ -3,14 +3,13 @@ package com.bmstu_bureau_1440.library.ui.models;
 import static com.bmstu_bureau_1440.shared.io.Operation.EXIT;
 
 import java.util.LinkedHashMap;
-import java.util.function.Supplier;
 
 import com.bmstu_bureau_1440.shared.io.IO;
 import com.bmstu_bureau_1440.shared.io.IOperation;
 
 public abstract class MenuSelector implements Runnable {
 
-    protected final LinkedHashMap<IOperation, Supplier<Runnable>> executors = new LinkedHashMap<>();
+    protected final LinkedHashMap<IOperation, Runnable> executors = new LinkedHashMap<>();
 
     @Override
     public final void run() {
@@ -26,7 +25,6 @@ public abstract class MenuSelector implements Runnable {
                     .findFirst()
                     .orElseThrow()
                     .getValue()
-                    .get()
                     .run();
         } while (loop());
     }
