@@ -4,7 +4,6 @@ import animals.impl.Parrot;
 import animals.impl.Shark;
 import animals.impl.Tiger;
 import com.bmstu_bureau_1440.shared.io.IO;
-import com.bmstu_bureau_1440.shared.io.IOperation;
 import facilities.Home;
 import io.Operation;
 import reports.ReportGenerator;
@@ -16,8 +15,6 @@ import staff.impl.Doctor;
 import staff.impl.ZooKeeper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static com.bmstu_bureau_1440.shared.io.Operation.EXIT;
@@ -50,10 +47,7 @@ public class Main {
 
             try {
 
-                List<IOperation> operations = new ArrayList<>(List.of(Operation.values()));
-                operations.add(EXIT);
-
-                var option = IO.displayMenu(operations.toArray(new IOperation[0]));
+                var option = IO.displayMenuWithExit(Operation.values());
 
                 if (option.equals(EXIT.getOperation())) {
 

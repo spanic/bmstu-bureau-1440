@@ -37,6 +37,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.bmstu_bureau_1440</groupId>
+            <artifactId>shared</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jdbc</artifactId>
         </dependency>
@@ -80,6 +84,7 @@
                 <configuration>
                     <profiles>
                         <profile>dev</profile>
+                        <profile>runtime</profile>
                     </profiles>
                 </configuration>
                 <executions>

@@ -1,5 +1,14 @@
 package com.bmstu_bureau_1440.shared.io;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 import org.jline.consoleui.prompt.ConsolePrompt;
 import org.jline.consoleui.prompt.PromptResultItemIF;
 import org.jline.consoleui.prompt.builder.ListPromptBuilder;
@@ -14,13 +23,6 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-
 public class IO {
 
     public static Terminal terminal;
@@ -33,6 +35,10 @@ public class IO {
         }
     }
 
+    public static String displayMenuWithExit(IOperation[] operations) {
+        return displayMenu(withExit(operations));
+    }
+
     public static String displayMenu(IOperation... operations) {
         ConsolePrompt prompt = new ConsolePrompt(terminal);
         ListPromptBuilder builder = prompt.getPromptBuilder().createListPrompt();
@@ -41,7 +47,8 @@ public class IO {
 
         for (IOperation operation : operations) {
             AttributedStringBuilder textBuilder = new AttributedStringBuilder();
-            // TIP: it's important to set style before text while using AttributedStringBuilder
+            // TIP: it's important to set style before text while using
+            // AttributedStringBuilder
             if (operation.getStyle() != null) {
                 textBuilder = textBuilder.style(operation.getStyle());
             }
@@ -82,30 +89,30 @@ public class IO {
 
     public static void displaySuccess(String message) {
         if (message != null && !message.isBlank()) {
-            AttributedString greenText =
-                    new AttributedString(message, AttributedStyle.BOLD.foreground(AttributedStyle.GREEN));
+            AttributedString greenText = new AttributedString(message,
+                    AttributedStyle.BOLD.foreground(AttributedStyle.GREEN));
             terminal.writer().println(greenText.toAnsi(terminal));
         }
     }
 
     public static void displayWarning(String message) {
         if (message != null && !message.isBlank()) {
-            AttributedString orangeText =
-                    new AttributedString(message, AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW));
+            AttributedString orangeText = new AttributedString(message,
+                    AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW));
             terminal.writer().println(orangeText.toAnsi(terminal));
         }
     }
 
     public static void displayError(Exception e) {
-        AttributedString redText =
-                new AttributedString("Error: " + e.getMessage(), AttributedStyle.BOLD.foreground(AttributedStyle.RED));
+        AttributedString redText = new AttributedString("Error: " + e.getMessage(),
+                AttributedStyle.BOLD.foreground(AttributedStyle.RED));
         terminal.writer().println(redText.toAnsi(terminal));
     }
 
     public static <T> String inputWithAutocomplete(String label,
-                                                   T[] entities,
-                                                   Function<T, String> getSearchValueFn,
-                                                   Function<T, String> getSuggestionFn) {
+            T[] entities,
+            Function<T, String> getSearchValueFn,
+            Function<T, String> getSuggestionFn) {
 
         var colouredLabel = new AttributedStringBuilder()
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN))
@@ -125,8 +132,7 @@ public class IO {
             candidates.add(new Candidate(searchValue, searchValue, null, suggestion, null, null, true));
         }
 
-        Completer completer = (reader, line, completions) ->
-                completions.addAll(candidates);
+        Completer completer = (reader, line, completions) -> completions.addAll(candidates);
 
         LineReader reader = LineReaderBuilder.builder()
                 .terminal(terminal)
@@ -142,6 +148,10 @@ public class IO {
         }
 
         return null;
+    }
+
+    private static IOperation[] withExit(IOperation[] operations) {
+        return Stream.concat(Arrays.stream(operations), Stream.of(Operation.EXIT)).toArray(IOperation[]::new);
     }
 
 }
