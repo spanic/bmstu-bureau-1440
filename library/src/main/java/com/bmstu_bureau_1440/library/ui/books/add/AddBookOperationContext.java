@@ -1,4 +1,4 @@
-package com.bmstu_bureau_1440.library.ui;
+package com.bmstu_bureau_1440.library.ui.books.add;
 
 import com.bmstu_bureau_1440.library.models.Book;
 

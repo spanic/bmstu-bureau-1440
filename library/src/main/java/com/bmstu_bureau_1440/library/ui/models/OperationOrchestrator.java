@@ -1,11 +1,11 @@
-package com.bmstu_bureau_1440.library.ui;
+package com.bmstu_bureau_1440.library.ui.models;
 
 import java.util.LinkedHashMap;
 import java.util.function.Supplier;
 
-public abstract class OperationOrchestrator<K> {
+public abstract class OperationOrchestrator<K> implements ParametrizedStepExecutor<K> {
 
-    protected final LinkedHashMap<Enum<?>, Supplier<StepExecutor<K>>> stepExecutors = new LinkedHashMap<>();
+    protected final LinkedHashMap<Enum<?>, Supplier<ParametrizedStepExecutor<K>>> stepExecutors = new LinkedHashMap<>();
 
     protected final K context;
 
@@ -15,10 +15,11 @@ public abstract class OperationOrchestrator<K> {
         this.context = context;
     }
 
-    public void execute() {
+    @Override
+    public void run() {
         if (currentStep == null) {
             if (stepExecutors.isEmpty()) {
-                return;
+                throw new IllegalStateException("There're no executors found");
             }
             currentStep = stepExecutors.firstEntry().getKey();
         }
@@ -27,10 +28,17 @@ public abstract class OperationOrchestrator<K> {
             var nextStepExecutorSupplier = stepExecutors.get(currentStep);
 
             if (nextStepExecutorSupplier == null) {
-                return;
+                throw new IllegalStateException("There're no executors for the current step");
             }
 
             currentStep = nextStepExecutorSupplier.get().execute(context);
         }
+
     }
+
+    @Override
+    public Enum<?> execute(K context) {
+        throw new UnsupportedOperationException("This method is not supported for the current operations orchestrator");
+    }
+
 }

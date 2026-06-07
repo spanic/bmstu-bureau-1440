@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
-public enum Operation implements IOperation {
+public enum MainOperations implements IOperation {
 
-    ADD_BOOK("add_book", "Добавить новую книгу");
+    LIST_BOOKS_OPERATIONS("list_books_operations", "Книги");
 
     @NonNull
     @Getter
