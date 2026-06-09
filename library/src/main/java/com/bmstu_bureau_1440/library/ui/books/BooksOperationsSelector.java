@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.bmstu_bureau_1440.library.ui.books.add.AddBookOperationContext;
 import com.bmstu_bureau_1440.library.ui.books.add.AddBookOperationOrchestrator;
-import com.bmstu_bureau_1440.library.ui.models.MenuSelector;
+import com.bmstu_bureau_1440.shared.io.MenuSelector;
 
 import jakarta.annotation.PostConstruct;
 
@@ -22,6 +22,11 @@ public class BooksOperationsSelector extends MenuSelector {
             var orchestrator = new AddBookOperationOrchestrator(contextProvider.getObject());
             orchestrator.run();
         });
+    }
+
+    @Override
+    protected String getLabel() {
+        return "Выберите действие с книгами:";
     }
 
 }

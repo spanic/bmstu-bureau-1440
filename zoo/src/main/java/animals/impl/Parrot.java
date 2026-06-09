@@ -9,10 +9,10 @@ import lombok.NonNull;
 public class Parrot extends Animal implements MakesSounds {
 
     public Parrot(@NonNull String name,
-                  @NonNull short age,
-                  @NonNull Home home,
-                  @NonNull Region[] origin,
-                  @NonNull short feedingIntervalHrs) {
+            @NonNull Short age,
+            @NonNull Home home,
+            @NonNull Region[] origin,
+            @NonNull Short feedingIntervalHrs) {
         super(name, age, home, origin, feedingIntervalHrs);
     }
 

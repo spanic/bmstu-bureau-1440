@@ -32,30 +32,14 @@ docker compose up -d
 
 This starts a PostgreSQL 18 container on `localhost:5432` with database `library`, user `library`, password `library`.
 
-### 2. Build
+### 2. Build and run the executable jar
+
+Application is packaged into a self-contained executable fat jar (with nested dependencies, merged `spring.factories`, auto-detected main class).
 
 From the project root:
 
 ```bash
-mvn compile -pl library
-```
-
-### 3. Run
-
-```bash
-mvn spring-boot:run -pl library
-```
-
-On first startup, Spring Boot automatically:
-- Creates tables via `schema.sql`
-- Populates seed data via `data.sql`
-
-### 4. Build and run the executable jar
-
-Package the application into a self-contained executable jar. The `spring-boot-maven-plugin`'s `repackage` goal builds a proper Spring Boot fat jar (nested dependencies, merged `spring.factories`, auto-detected main class):
-
-```bash
-mvn clean package -pl library
+mvn clean package -pl library -am
 ```
 
 The executable archive is produced at `library/target/library-1.0-SNAPSHOT.jar`.
@@ -65,10 +49,14 @@ To run it use the following command:
 java -jar library/target/library-*.jar
 ```
 
+On first startup, Spring Boot automatically:
+- Creates tables via `schema.sql`
+- Populates seed data via `data.sql`
+
 Need logs from the jar occasionally? Just opt in per-run: 
 
 ```bash
-java -jar library-*.jar --spring.profiles.active=dev # (or --logging.level.root=INFO).
+java -jar library/target/library-*.jar --spring.profiles.active=dev # (or --logging.level.root=INFO).
 ```
 
 ## Tests

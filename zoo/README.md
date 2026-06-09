@@ -1,8 +1,20 @@
-### Зоопарк
+# Зоопарк
 
 🎥 Скринкаст: [ссылка](https://disk.yandex.kz/i/x96DSBSVanI3Ag)
 
 🪧 Доска с описанием архитектуры: [ссылка](https://unidraw.io/app/board/6b180f2544ddd1fd7237?allow_guest=true)
+
+## Сборка и запуск
+
+```bash
+mvn clean package -pl zoo -am
+```
+
+```bash
+java -jar target/zoo-*-jar-with-dependencies.jar
+```
+
+## Описание
 
 Программа моделирует работу зоопарка: составление отчётов, учет персонала, уборку, кормление и лечение животных. Работа
 с программой

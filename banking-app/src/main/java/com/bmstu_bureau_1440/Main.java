@@ -1,107 +1,105 @@
 package com.bmstu_bureau_1440;
 
-import com.bmstu_bureau_1440.banking.*;
+import com.bmstu_bureau_1440.banking.Account;
+import com.bmstu_bureau_1440.banking.Bank;
+import com.bmstu_bureau_1440.banking.CreditAccount;
+import com.bmstu_bureau_1440.banking.Customer;
+import com.bmstu_bureau_1440.banking.DebitAccount;
 import com.bmstu_bureau_1440.io.Operation;
 import com.bmstu_bureau_1440.shared.io.IO;
+import com.bmstu_bureau_1440.shared.io.MenuSelector;
 
 public class Main {
 
     public static void main(String[] args) {
+        new Main.BankingApplication().run();
+    }
 
-        while (true) {
-            var option = IO.displayMenu(Operation.values());
+    private final static class BankingApplication extends MenuSelector {
 
-            try {
-                if (Operation.EXIT.getOperation().equals(option)) {
+        {
+            executors.put(Operation.CREATE_CUSTOMER, () -> {
+                var name = IO.inputString("Enter customer's name: ");
+                Bank.createCustomer(name);
+                IO.displaySuccess("Customer created");
+            });
 
-                    break;
+            executors.put(Operation.OPEN_DEBIT, () -> {
+                var id = getCustomerIdWithAutocomplete();
 
-                } else if (Operation.CREATE_CUSTOMER.getOperation().equals(option)) {
+                var account = Bank.openDebitAccount(Bank.findCustomer(id));
 
-                    var name = IO.inputString("Enter customer's name: ");
-                    Bank.createCustomer(name);
-                    IO.displaySuccess("Customer created");
+                IO.displaySuccess(String.format(
+                        "Debit account %s for customer %s has been created",
+                        account.getAccountNumber(),
+                        account.getOwner().getName()));
+            });
 
-                } else if (Operation.OPEN_DEBIT.getOperation().equals(option)) {
+            executors.put(Operation.OPEN_CREDIT, () -> {
+                var id = getCustomerIdWithAutocomplete();
+                var creditLimit = IO.inputString("Enter credit limit: ");
 
-                    var id = getCustomerIdWithAutocomplete();
+                var account = Bank.openCreditAccount(
+                        Bank.findCustomer(id),
+                        creditLimit != null ? Double.parseDouble(creditLimit) : 0d);
 
-                    var account = Bank.openDebitAccount(Bank.findCustomer(id));
+                IO.displaySuccess(String.format(
+                        "Credit account %s for customer %s has been created",
+                        account.getAccountNumber(),
+                        account.getOwner().getName()));
+            });
 
-                    IO.displaySuccess(String.format(
-                            "Debit account %s for customer %s has been created",
-                            account.getAccountNumber(),
-                            account.getOwner().getName())
-                    );
+            executors.put(Operation.DEPOSIT, () -> {
+                var accountNumber = getAccountNumberWithAutocomplete("Enter account number: ");
+                var amount = IO.inputString("Enter deposit amount: ");
 
-                } else if (Operation.OPEN_CREDIT.getOperation().equals(option)) {
+                Bank.deposit(accountNumber, amount != null ? Double.parseDouble(amount) : 0d);
 
-                    var id = getCustomerIdWithAutocomplete();
-                    var creditLimit = IO.inputString("Enter credit limit: ");
+                IO.displaySuccess(String.format(
+                        "Deposit to account %s for customer %s is successful",
+                        accountNumber,
+                        Bank.findAccount(accountNumber).getOwner().getName()));
+            });
 
-                    var account = Bank.openCreditAccount(
-                            Bank.findCustomer(id),
-                            creditLimit != null ? Double.parseDouble(creditLimit) : 0d
-                    );
+            executors.put(Operation.WITHDRAW, () -> {
+                var accountNumber = getAccountNumberWithAutocomplete("Enter account number: ");
+                var amount = IO.inputString("Enter withdraw amount: ");
 
-                    IO.displaySuccess(String.format(
-                            "Credit account %s for customer %s has been created",
-                            account.getAccountNumber(),
-                            account.getOwner().getName())
-                    );
+                Bank.withdraw(accountNumber, amount != null ? Double.parseDouble(amount) : 0d);
 
-                } else if (Operation.DEPOSIT.getOperation().equals(option)) {
+                IO.displaySuccess(String.format(
+                        "Withdraw from account %s for customer %s is successful",
+                        accountNumber,
+                        Bank.findAccount(accountNumber).getOwner().getName()));
+            });
 
-                    var accountNumber = getAccountNumberWithAutocomplete("Enter account number: ");
-                    var amount = IO.inputString("Enter deposit amount: ");
+            executors.put(Operation.TRANSFER, () -> {
+                var fromAccountNumber = getAccountNumberWithAutocomplete("Enter account number to transfer from: ");
+                var toAccountNumber = getAccountNumberWithAutocomplete("Enter account number to transfer to: ");
+                var amount = IO.inputString("Enter transfer amount: ");
 
-                    Bank.deposit(accountNumber, amount != null ? Double.parseDouble(amount) : 0d);
+                Bank.transfer(fromAccountNumber, toAccountNumber, amount != null ? Double.parseDouble(amount) : 0d);
 
-                    IO.displaySuccess(String.format(
-                            "Deposit to account %s for customer %s is successful",
-                            accountNumber,
-                            Bank.findAccount(accountNumber).getOwner().getName())
-                    );
+                IO.displaySuccess("Transfer is successful");
+            });
 
-                } else if (Operation.WITHDRAW.getOperation().equals(option)) {
+            executors.put(Operation.SHOW_ACCOUNTS, () -> {
+                var id = getCustomerIdWithAutocomplete();
+                Bank.printCustomerAccounts(id);
+            });
 
-                    var accountNumber = getAccountNumberWithAutocomplete("Enter account number: ");
-                    var amount = IO.inputString("Enter withdraw amount: ");
+            executors.put(Operation.SHOW_TRANSACTIONS, () -> {
+                Bank.printTransactions();
+            });
 
-                    Bank.withdraw(accountNumber, amount != null ? Double.parseDouble(amount) : 0d);
+            executors.put(Operation.SHOW_REPORT, () -> {
+                Bank.printReport();
+            });
+        }
 
-                    IO.displaySuccess(String.format(
-                            "Withdraw from account %s for customer %s is successful",
-                            accountNumber,
-                            Bank.findAccount(accountNumber).getOwner().getName())
-                    );
-
-                } else if (Operation.TRANSFER.getOperation().equals(option)) {
-
-                    var fromAccountNumber = getAccountNumberWithAutocomplete("Enter account number to transfer from: ");
-                    var toAccountNumber = getAccountNumberWithAutocomplete("Enter account number to transfer to: ");
-                    var amount = IO.inputString("Enter transfer amount: ");
-
-                    Bank.transfer(fromAccountNumber, toAccountNumber, amount != null ? Double.parseDouble(amount) : 0d);
-
-                    IO.displaySuccess("Transfer is successful");
-
-                } else if (Operation.SHOW_ACCOUNTS.getOperation().equals(option)) {
-
-                    var id = getCustomerIdWithAutocomplete();
-                    Bank.printCustomerAccounts(id);
-
-                } else if (Operation.SHOW_TRANSACTIONS.getOperation().equals(option)) {
-                    Bank.printTransactions();
-
-                } else if (Operation.SHOW_REPORT.getOperation().equals(option)) {
-                    Bank.printReport();
-                }
-
-            } catch (Exception e) {
-                IO.displayError(e);
-            }
-
+        @Override
+        protected boolean loop() {
+            return true;
         }
 
     }
@@ -111,8 +109,8 @@ public class Main {
                 "Enter customer's ID: ",
                 Bank.customers.toArray(Customer[]::new),
                 Customer::getId,
-                Customer::getName
-        );
+                Customer::getName)
+                .getId();
     }
 
     private static String getAccountNumberWithAutocomplete(String label) {
@@ -122,10 +120,10 @@ public class Main {
                 Account::getAccountNumber,
                 (account) -> String.format("%s, %s, %s",
                         account.getOwner().getName(),
-                        account instanceof DebitAccount ? "Debit" : account instanceof CreditAccount ? "Credit" : "Unknown",
-                        account.getBalance()
-                )
-        );
+                        account instanceof DebitAccount ? "Debit"
+                                : account instanceof CreditAccount ? "Credit" : "Unknown",
+                        account.getBalance()))
+                .getAccountNumber();
     }
 
 }

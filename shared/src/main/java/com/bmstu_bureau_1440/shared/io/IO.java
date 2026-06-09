@@ -2,7 +2,6 @@ package com.bmstu_bureau_1440.shared.io;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,36 +34,32 @@ public class IO {
         }
     }
 
-    public static String displayMenuWithExit(IOperation[] operations) {
-        return displayMenu(withExit(operations));
-    }
-
-    public static String displayMenu(IOperation... operations) {
+    public static <T extends ListOption> T inputListOptions(String label, T[] entities) {
         ConsolePrompt prompt = new ConsolePrompt(terminal);
         ListPromptBuilder builder = prompt.getPromptBuilder().createListPrompt();
 
-        builder.name("operation").message("Choose operation:");
+        builder.name("list").message(label);
 
-        for (IOperation operation : operations) {
+        for (T entity : entities) {
             AttributedStringBuilder textBuilder = new AttributedStringBuilder();
-            // TIP: it's important to set style before text while using
-            // AttributedStringBuilder
-            if (operation.getStyle() != null) {
-                textBuilder = textBuilder.style(operation.getStyle());
+            if (entity.getStyle() != null) {
+                textBuilder = textBuilder.style(entity.getStyle());
             }
-            textBuilder.append(operation.getText());
+            textBuilder.append(entity.getDisplayText());
 
-            builder.newItem(operation.getOperation()).text(textBuilder.toAttributedString().toAnsi()).add();
+            builder.newItem(entity.getKey()).text(textBuilder.toAttributedString().toAnsi()).add();
         }
 
+        String result;
         try {
-            Map<String, PromptResultItemIF> result = prompt.prompt(builder.addPrompt().build());
-            return result.get("operation").getResult();
+            result = prompt.prompt(builder.addPrompt().build()).get("list").getResult();
+            return Stream.of(entities)
+                    .filter(e -> e.getKey().equals(result))
+                    .findFirst()
+                    .orElseThrow();
         } catch (IOException e) {
-            System.err.println("Error while getting operation from menu: " + e.getMessage());
+            throw new RuntimeException("Error while getting list options: " + e.getMessage());
         }
-
-        return Operation.EXIT.getOperation();
     }
 
     public static String inputString(String label) {
@@ -109,9 +104,9 @@ public class IO {
         terminal.writer().println(redText.toAnsi(terminal));
     }
 
-    public static <T> String inputWithAutocomplete(String label,
+    public static <T> T inputWithAutocomplete(String label,
             T[] entities,
-            Function<T, String> getSearchValueFn,
+            Function<T, String> getKeyFn,
             Function<T, String> getSuggestionFn) {
 
         var colouredLabel = new AttributedStringBuilder()
@@ -127,7 +122,7 @@ public class IO {
 
         for (T entity : entities) {
             var suggestion = getSuggestionFn.apply(entity);
-            var searchValue = getSearchValueFn.apply(entity);
+            var searchValue = getKeyFn.apply(entity);
 
             candidates.add(new Candidate(searchValue, searchValue, null, suggestion, null, null, true));
         }
@@ -142,16 +137,13 @@ public class IO {
 
         try {
             String output = reader.readLine(colouredLabel).trim();
-            return Objects.equals(output, "null") ? null : output;
+            return Objects.equals(output, "null") ? null
+                    : Stream.of(entities).filter(e -> getKeyFn.apply(e).equals(output)).findFirst().orElseThrow();
         } catch (Exception e) {
-            System.err.println("Error while getting info from input prompt: " + e.getMessage());
+            throw new RuntimeException("Error while getting info from input prompt: " + e.getMessage());
+
         }
 
-        return null;
-    }
-
-    private static IOperation[] withExit(IOperation[] operations) {
-        return Stream.concat(Arrays.stream(operations), Stream.of(Operation.EXIT)).toArray(IOperation[]::new);
     }
 
 }

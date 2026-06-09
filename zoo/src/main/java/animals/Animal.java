@@ -1,13 +1,13 @@
 package animals;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import facilities.Home;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public abstract class Animal {
@@ -19,7 +19,7 @@ public abstract class Animal {
     @NonNull
     private final String name;
     @NonNull
-    short age;
+    Short age;
     @NonNull
     @Getter
     Home home;

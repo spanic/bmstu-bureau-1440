@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.bmstu_bureau_1440.library.ui.books.BooksOperationsSelector;
-import com.bmstu_bureau_1440.library.ui.models.MenuSelector;
+import com.bmstu_bureau_1440.shared.io.MenuSelector;
 
 import jakarta.annotation.PostConstruct;
 
