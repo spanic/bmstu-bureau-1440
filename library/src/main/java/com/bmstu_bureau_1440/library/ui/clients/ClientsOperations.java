@@ -1,4 +1,4 @@
-package com.bmstu_bureau_1440.library.ui;
+package com.bmstu_bureau_1440.library.ui.clients;
 
 import org.jline.utils.AttributedStyle;
 
@@ -11,10 +11,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
-public enum MainOperations implements ListOption {
+public enum ClientsOperations implements ListOption {
 
-    LIST_BOOKS_OPERATIONS("Книги"),
-    LIST_CLIENTS_OPERATIONS("Клиенты");
+    ADD_CLIENT("Добавить нового читателя");
 
     @NonNull
     @Getter

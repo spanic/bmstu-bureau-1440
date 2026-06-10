@@ -19,3 +19,10 @@ CREATE TABLE IF NOT EXISTS operations (
     performed_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     borrower_name VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS clients (
+    id          BIGSERIAL    PRIMARY KEY,
+    name        VARCHAR(255) NOT NULL,
+    email       VARCHAR(255),
+    created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
