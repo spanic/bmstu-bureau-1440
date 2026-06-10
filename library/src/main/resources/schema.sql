@@ -12,17 +12,18 @@ CREATE TABLE IF NOT EXISTS books (
     available BOOLEAN       NOT NULL DEFAULT TRUE
 );
 
-CREATE TABLE IF NOT EXISTS operations (
-    id            BIGSERIAL    PRIMARY KEY,
-    book_id       BIGINT       NOT NULL REFERENCES books(id),
-    type          VARCHAR(20)  NOT NULL,
-    performed_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    borrower_name VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS clients (
     id          BIGSERIAL    PRIMARY KEY,
     name        VARCHAR(255) NOT NULL,
     email       VARCHAR(255),
     created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS operations (
+    id            BIGSERIAL    PRIMARY KEY,
+    book_id       BIGINT       NOT NULL REFERENCES books(id),
+    client_id     BIGINT       NOT NULL REFERENCES clients(id),
+    type          VARCHAR(20)  NOT NULL,
+    performed_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
