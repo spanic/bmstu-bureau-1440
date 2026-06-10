@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.bmstu_bureau_1440.library.AbstractIntegrationTest;
 import com.bmstu_bureau_1440.library.models.Book;
+import com.bmstu_bureau_1440.library.models.Genre;
 import com.bmstu_bureau_1440.library.models.Operation;
 import com.bmstu_bureau_1440.library.models.OperationType;
 
@@ -30,7 +31,7 @@ class OperationRepositoryTest extends AbstractIntegrationTest {
     @Test
     void saveAndFindByBookId() {
         var book = bookRepository.save(
-                new Book(null, "Fathers and Sons", "Ivan Turgenev", "978-0-14-044747-7", true));
+                new Book(null, "Fathers and Sons", "Ivan Turgenev", Genre.NOVEL, true));
 
         operationRepository.save(new Operation(
                 null, book.getId(), OperationType.WITHDRAW, LocalDateTime.now(), "Alexei Ivanov"));

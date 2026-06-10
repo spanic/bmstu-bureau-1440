@@ -1,9 +1,15 @@
+CREATE TYPE book_genre AS ENUM (
+    'ADVENTURE', 'CRIME', 'HORROR', 'MYSTERY', 'FANTASY',
+    'SCIENCE_FICTION', 'NOVEL', 'POETRY', 'BIOGRAPHY', 'HISTORY',
+    'SCIENCE', 'TECHNOLOGY', 'ART', 'OTHER'
+);
+
 CREATE TABLE IF NOT EXISTS books (
-    id          BIGSERIAL    PRIMARY KEY,
-    title       VARCHAR(255) NOT NULL,
-    author      VARCHAR(255) NOT NULL,
-    isbn        VARCHAR(20)  NOT NULL UNIQUE,
-    available   BOOLEAN      NOT NULL DEFAULT TRUE
+    id        BIGSERIAL     PRIMARY KEY,
+    title     VARCHAR(255)  NOT NULL,
+    author    VARCHAR(255)  NOT NULL,
+    genre     book_genre    NOT NULL,
+    available BOOLEAN       NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS operations (

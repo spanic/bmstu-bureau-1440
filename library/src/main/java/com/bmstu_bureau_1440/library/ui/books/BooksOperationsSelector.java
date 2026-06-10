@@ -19,8 +19,7 @@ public class BooksOperationsSelector extends MenuSelector {
     @PostConstruct
     private void init() {
         executors.put(BooksOperations.ADD_BOOK, () -> {
-            var orchestrator = new AddBookOperationOrchestrator(contextProvider.getObject());
-            orchestrator.run();
+            new AddBookOperationOrchestrator(contextProvider.getObject()).run();
         });
     }
 

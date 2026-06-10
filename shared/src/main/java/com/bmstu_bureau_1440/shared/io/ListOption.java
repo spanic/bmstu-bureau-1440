@@ -5,7 +5,7 @@ import org.jline.utils.AttributedStyle;
 public interface ListOption {
     String getKey();
 
-    String getDisplayText();
+    String getName();
 
     default AttributedStyle getStyle() {
         return AttributedStyle.DEFAULT;

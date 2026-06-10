@@ -7,7 +7,8 @@ public class AddBookOperationOrchestrator extends OperationOrchestrator<AddBookO
     public enum AddBookSteps {
         TITLE,
         AUTHOR,
-        CONFIRMATION
+        CONFIRMATION,
+        GENRE
     }
 
     public AddBookOperationOrchestrator(AddBookOperationContext context) {
@@ -15,6 +16,7 @@ public class AddBookOperationOrchestrator extends OperationOrchestrator<AddBookO
         stepExecutors.put(AddBookSteps.TITLE, AddBookOperationSteps.EnterBookTitleStep::new);
         stepExecutors.put(AddBookSteps.AUTHOR, AddBookOperationSteps.EnterBookAuthorStep::new);
         stepExecutors.put(AddBookSteps.CONFIRMATION, AddBookOperationSteps.AddBookConfirmationStep::new);
+        stepExecutors.put(AddBookSteps.GENRE, AddBookOperationSteps.SelectBookGenreStep::new);
     }
 
 }

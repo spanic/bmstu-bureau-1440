@@ -1,5 +1,6 @@
 package com.bmstu_bureau_1440.library.ui.books.add;
 
+import com.bmstu_bureau_1440.library.models.Genre;
 import com.bmstu_bureau_1440.library.ui.books.add.AddBookOperationOrchestrator.AddBookSteps;
 import com.bmstu_bureau_1440.library.ui.models.ParametrizedStepExecutor;
 import com.bmstu_bureau_1440.shared.io.IO;
@@ -21,6 +22,16 @@ public class AddBookOperationSteps {
         @Override
         public AddBookSteps execute(AddBookOperationContext context) {
             context.getBook().setAuthor(IO.inputString("Кто автор?"));
+            return AddBookSteps.GENRE;
+        }
+
+    }
+
+    public static class SelectBookGenreStep implements ParametrizedStepExecutor<AddBookOperationContext> {
+
+        @Override
+        public AddBookSteps execute(AddBookOperationContext context) {
+            context.getBook().setGenre(IO.inputListOptions("Какой жанр?", Genre.values()));
             return AddBookSteps.CONFIRMATION;
         }
 
@@ -30,12 +41,8 @@ public class AddBookOperationSteps {
 
         @Override
         public AddBookSteps execute(AddBookOperationContext context) {
-            context.getBook().setIsbn("some-random-isbn");
-
             var savedBook = context.getBookRepository().save(context.getBook());
-
             IO.displaySuccess("Книга успешно добавлена: " + savedBook.getId());
-
             return null;
         }
 

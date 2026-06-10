@@ -45,7 +45,7 @@ public class IO {
             if (entity.getStyle() != null) {
                 textBuilder = textBuilder.style(entity.getStyle());
             }
-            textBuilder.append(entity.getDisplayText());
+            textBuilder.append(entity.getName());
 
             builder.newItem(entity.getKey()).text(textBuilder.toAttributedString().toAnsi()).add();
         }

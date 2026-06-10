@@ -21,7 +21,7 @@ public enum BooksOperations implements ListOption {
 
     @NonNull
     @Getter
-    private final String displayText;
+    private final String name;
 
     @Getter
     private AttributedStyle style;

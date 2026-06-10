@@ -1,10 +1,10 @@
 /* Initial data seeding */
 
-INSERT INTO books (id, title, author, isbn, available) VALUES
-    (1, 'The Master and Margarita', 'Mikhail Bulgakov', '978-0-14-118014-1', TRUE),
-    (2, 'War and Peace', 'Leo Tolstoy', '978-0-19-923276-5', FALSE),
-    (3, 'Crime and Punishment', 'Fyodor Dostoevsky', '978-0-14-044913-6', TRUE),
-    (4, 'Anna Karenina', 'Leo Tolstoy', '978-0-14-303500-8', TRUE)
+INSERT INTO books (id, title, author, genre, available) VALUES
+    (1, 'The Master and Margarita', 'Mikhail Bulgakov', 'FANTASY', TRUE),
+    (2, 'War and Peace', 'Leo Tolstoy', 'NOVEL', FALSE),
+    (3, 'Crime and Punishment', 'Fyodor Dostoevsky', 'CRIME', TRUE),
+    (4, 'Anna Karenina', 'Leo Tolstoy', 'NOVEL', TRUE)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO operations (id, book_id, type, performed_at, borrower_name) VALUES
