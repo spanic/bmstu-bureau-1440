@@ -47,4 +47,18 @@ class BookRepositoryTest extends AbstractIntegrationTest {
 
         assertThat(all).hasSize(2);
     }
+
+    @Test
+    void findByTitleContainingIgnoreCaseReturnsBooksIfTitleMatches() {
+        bookRepository.save(new Book(null, "Мертвые души", "Николай Андреевич Гоголь", Genre.NOVEL, true));
+        bookRepository.save(new Book(null, "Идиот", "Федор Михайлович Достоевский", Genre.NOVEL, false));
+        bookRepository.save(
+                new Book(null, "Меркурий и Венера – таинственные планеты", "Иванов И. И.", Genre.SCIENCE_FICTION,
+                        true));
+
+        var books = bookRepository.findByTitleContainingIgnoreCase("МЕР");
+
+        assertThat(books).hasSize(2);
+    }
+
 }

@@ -13,11 +13,9 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public enum BooksOperations implements ListOption {
 
-    ADD_BOOK("add_book", "Добавить новую книгу");
-
-    @NonNull
-    @Getter
-    private final String key;
+    ADD_BOOK("Добавить новую книгу"),
+    VIEW_BOOKS("Посмотреть все книги"),
+    FIND_BOOK_BY_TITLE("Найти книгу");
 
     @NonNull
     @Getter
@@ -25,5 +23,10 @@ public enum BooksOperations implements ListOption {
 
     @Getter
     private AttributedStyle style;
+
+    @Override
+    public String getKey() {
+        return getName();
+    }
 
 }

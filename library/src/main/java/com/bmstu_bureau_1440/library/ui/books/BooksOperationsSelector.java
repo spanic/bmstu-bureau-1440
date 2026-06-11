@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import com.bmstu_bureau_1440.library.ui.books.add.AddBookOperationContext;
 import com.bmstu_bureau_1440.library.ui.books.add.AddBookOperationOrchestrator;
+import com.bmstu_bureau_1440.library.ui.books.find.FindBookOperationContext;
+import com.bmstu_bureau_1440.library.ui.books.find.FindBookOperationOrchestrator;
+import com.bmstu_bureau_1440.library.ui.books.view.ViewBooksOperationExecutor;
 import com.bmstu_bureau_1440.shared.io.MenuSelector;
 
 import jakarta.annotation.PostConstruct;
@@ -14,13 +17,22 @@ import jakarta.annotation.PostConstruct;
 public class BooksOperationsSelector extends MenuSelector {
 
     @Autowired
-    private ObjectProvider<AddBookOperationContext> contextProvider;
+    private ObjectProvider<AddBookOperationContext> addBookOperationContextProvider;
+
+    @Autowired
+    private ObjectProvider<ViewBooksOperationExecutor> viewBooksOperationExecutorProvider;
+
+    @Autowired
+    private ObjectProvider<FindBookOperationContext> findBookOperationContextProvider;
 
     @PostConstruct
     private void init() {
-        executors.put(BooksOperations.ADD_BOOK, () -> {
-            new AddBookOperationOrchestrator(contextProvider.getObject()).run();
-        });
+        executors.put(BooksOperations.ADD_BOOK,
+                new AddBookOperationOrchestrator(addBookOperationContextProvider.getObject()));
+        executors.put(BooksOperations.VIEW_BOOKS,
+                viewBooksOperationExecutorProvider.getObject());
+        executors.put(BooksOperations.FIND_BOOK_BY_TITLE,
+                new FindBookOperationOrchestrator(findBookOperationContextProvider.getObject()));
     }
 
     @Override

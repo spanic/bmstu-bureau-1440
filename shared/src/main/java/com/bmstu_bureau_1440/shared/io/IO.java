@@ -87,6 +87,7 @@ public class IO {
             AttributedString greenText = new AttributedString(message,
                     AttributedStyle.BOLD.foreground(AttributedStyle.GREEN));
             terminal.writer().println(greenText.toAnsi(terminal));
+            terminal.flush();
         }
     }
 
@@ -95,6 +96,7 @@ public class IO {
             AttributedString orangeText = new AttributedString(message,
                     AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW));
             terminal.writer().println(orangeText.toAnsi(terminal));
+            terminal.flush();
         }
     }
 
@@ -102,6 +104,7 @@ public class IO {
         AttributedString redText = new AttributedString("Error: " + e.getMessage(),
                 AttributedStyle.BOLD.foreground(AttributedStyle.RED));
         terminal.writer().println(redText.toAnsi(terminal));
+        terminal.flush();
     }
 
     public static <T> T inputWithAutocomplete(String label,

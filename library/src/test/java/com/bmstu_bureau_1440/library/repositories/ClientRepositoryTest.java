@@ -14,8 +14,12 @@ public class ClientRepositoryTest extends AbstractIntegrationTest {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private OperationRepository operationRepository;
+
     @BeforeEach
     void setUp() {
+        operationRepository.deleteAll();
         clientRepository.deleteAll();
     }
 

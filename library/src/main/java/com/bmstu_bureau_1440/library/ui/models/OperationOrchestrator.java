@@ -7,9 +7,9 @@ public abstract class OperationOrchestrator<K> implements ParametrizedStepExecut
 
     protected final LinkedHashMap<Enum<?>, Supplier<ParametrizedStepExecutor<K>>> stepExecutors = new LinkedHashMap<>();
 
-    protected final K context;
+    private final K context;
 
-    protected Enum<?> currentStep;
+    private Enum<?> currentStep;
 
     protected OperationOrchestrator(K context) {
         this.context = context;
