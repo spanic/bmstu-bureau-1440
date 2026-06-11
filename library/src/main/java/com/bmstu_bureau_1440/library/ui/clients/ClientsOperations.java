@@ -13,7 +13,8 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public enum ClientsOperations implements ListOption {
 
-    ADD_CLIENT("Добавить нового читателя");
+    ADD_CLIENT("Добавить нового читателя"),
+    VIEW_CLIENTS("Посмотреть всех читателей");
 
     @NonNull
     @Getter
