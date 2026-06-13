@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.bmstu_bureau_1440.library.models.Book;
+import com.bmstu_bureau_1440.library.models.Client;
 import com.bmstu_bureau_1440.library.models.Operation;
 import com.bmstu_bureau_1440.library.repositories.BookRepository;
 import com.bmstu_bureau_1440.library.repositories.ClientRepository;
@@ -32,6 +33,10 @@ public class AddOperationContext {
 
     @Getter
     private Operation operation = new Operation();
+
+    @Getter
+    @Setter
+    private Client client;
 
     @Getter
     @Setter

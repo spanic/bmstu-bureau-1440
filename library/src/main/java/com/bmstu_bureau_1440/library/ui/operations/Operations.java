@@ -13,9 +13,8 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public enum Operations implements ListOption {
 
-    PROVIDE_BOOK("Выдать книгу"),
-    RETURN_BOOK("Вернуть книгу"),
-    VIEW_BOOKS_PROVIDED_TO_CLIENT("Посмотреть все книги, выданные читателю");
+    ADD_OPERATION("Добавить операцию"),
+    VIEW_WITHDRAWN_BOOKS("Посмотреть книги, выданные читателю");
 
     @NonNull
     @Getter

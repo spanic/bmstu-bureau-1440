@@ -13,6 +13,19 @@ import com.bmstu_bureau_1440.shared.io.IO;
 
 public class AddOperationSteps {
 
+    public static class ChooseOperationTypeStep implements ParametrizedStepExecutor<AddOperationContext> {
+
+        @Override
+        public AddOperationOrchestrator.Steps execute(AddOperationContext context) {
+            var operationType = IO.inputListOptions("Выберите тип операции:", OperationType.values());
+
+            context.getOperation().setType(operationType);
+
+            return AddOperationOrchestrator.Steps.CLIENT;
+        }
+
+    }
+
     public static class ChooseClientStep implements ParametrizedStepExecutor<AddOperationContext> {
 
         @Override
@@ -28,9 +41,8 @@ public class AddOperationSteps {
                 IO.displayError(new Exception("Читатель не выбран"));
                 return null;
             } else {
-                context.getOperation().setClient(AggregateReference.to(selectedClient.getId()));
+                context.setClient(selectedClient);
                 return AddOperationOrchestrator.Steps.BOOK;
-
             }
 
         }
@@ -42,7 +54,14 @@ public class AddOperationSteps {
         @Override
         public AddOperationOrchestrator.Steps execute(AddOperationContext context) {
 
-            Book[] books = context.getBookRepository().findByAvailableTrue().toArray(Book[]::new);
+            Book[] books;
+            if (context.getOperation().getType() == OperationType.WITHDRAW) {
+                books = context.getBookRepository().findByAvailableTrue().toArray(Book[]::new);
+            } else {
+                books = context.getOperationRepository()
+                        .findWithdrawnBooksByClient(AggregateReference.to(context.getClient().getId()))
+                        .toArray(Book[]::new);
+            }
 
             var selectedBook = IO.inputWithAutocomplete("Выберите книгу:", books, Book::toString);
 
@@ -50,7 +69,6 @@ public class AddOperationSteps {
                 IO.displayError(new Exception("Книга не выбрана"));
                 return null;
             } else {
-                context.getOperation().setBook(AggregateReference.to(selectedBook.getId()));
                 context.setBook(selectedBook);
                 return AddOperationOrchestrator.Steps.CONFIRMATION;
             }
@@ -65,10 +83,14 @@ public class AddOperationSteps {
         @Transactional
         public AddOperationOrchestrator.Steps execute(AddOperationContext context) {
             var book = context.getBook();
-            book.setAvailable(false);
+            book.setAvailable(OperationType.WITHDRAW.equals(context.getOperation().getType()) ? false : true);
+
             context.getBookRepository().save(book);
 
-            context.getOperation().setType(OperationType.WITHDRAW);
+            context.getOperation().setType(context.getOperation().getType());
+            context.getOperation().setClient(AggregateReference.to(context.getClient().getId()));
+            context.getOperation().setBook(AggregateReference.to(context.getBook().getId()));
+
             var savedOperation = context.getOperationRepository().save(context.getOperation());
 
             IO.displaySuccess("Операция успешно добавлена: " + savedOperation.getId());

@@ -5,6 +5,7 @@ import com.bmstu_bureau_1440.library.ui.models.OperationOrchestrator;
 public class AddOperationOrchestrator extends OperationOrchestrator<AddOperationContext> {
 
     public enum Steps {
+        OPERATION_TYPE,
         CLIENT,
         BOOK,
         CONFIRMATION
@@ -12,6 +13,7 @@ public class AddOperationOrchestrator extends OperationOrchestrator<AddOperation
 
     public AddOperationOrchestrator(AddOperationContext context) {
         super(context);
+        stepExecutors.put(Steps.OPERATION_TYPE, AddOperationSteps.ChooseOperationTypeStep::new);
         stepExecutors.put(Steps.CLIENT, AddOperationSteps.ChooseClientStep::new);
         stepExecutors.put(Steps.BOOK, AddOperationSteps.ChooseBookStep::new);
         stepExecutors.put(Steps.CONFIRMATION, AddOperationSteps.ConfirmationStep::new);

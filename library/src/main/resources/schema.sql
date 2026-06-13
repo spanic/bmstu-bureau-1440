@@ -4,6 +4,10 @@ CREATE TYPE book_genre AS ENUM (
     'SCIENCE', 'TECHNOLOGY', 'ART', 'OTHER'
 );
 
+CREATE TYPE operation_type AS ENUM (
+    'WITHDRAW', 'RETURN'
+);
+
 CREATE TABLE IF NOT EXISTS books (
     id        BIGSERIAL     PRIMARY KEY,
     title     VARCHAR(255)  NOT NULL,
@@ -20,10 +24,10 @@ CREATE TABLE IF NOT EXISTS clients (
 );
 
 CREATE TABLE IF NOT EXISTS operations (
-    id            BIGSERIAL    PRIMARY KEY,
-    book_id       BIGINT       NOT NULL REFERENCES books(id),
-    client_id     BIGINT       NOT NULL REFERENCES clients(id),
-    type          VARCHAR(20)  NOT NULL,
-    performed_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+    id            BIGSERIAL       PRIMARY KEY,
+    book_id       BIGINT          NOT NULL REFERENCES books(id),
+    client_id     BIGINT          NOT NULL REFERENCES clients(id),
+    type          operation_type  NOT NULL,
+    performed_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -125,6 +125,7 @@ public class IO {
                 .style(AttributedStyle.BOLD)
                 .append(" ")
                 .append(label)
+                .append(" ")
                 .toAttributedString()
                 .toAnsi();
 
