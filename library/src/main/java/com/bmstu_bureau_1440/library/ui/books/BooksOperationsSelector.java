@@ -28,11 +28,11 @@ public class BooksOperationsSelector extends MenuSelector {
     @PostConstruct
     private void init() {
         executors.put(BooksOperations.ADD_BOOK,
-                new AddBookOperationOrchestrator(addBookOperationContextProvider.getObject()));
+                () -> new AddBookOperationOrchestrator(addBookOperationContextProvider.getObject()).run());
         executors.put(BooksOperations.VIEW_BOOKS,
                 viewBooksOperationExecutorProvider.getObject());
         executors.put(BooksOperations.FIND_BOOK_BY_TITLE,
-                new FindBookOperationOrchestrator(findBookOperationContextProvider.getObject()));
+                () -> new FindBookOperationOrchestrator(findBookOperationContextProvider.getObject()).run());
     }
 
     @Override

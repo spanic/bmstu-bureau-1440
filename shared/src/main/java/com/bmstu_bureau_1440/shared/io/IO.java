@@ -16,6 +16,7 @@ import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedString;
@@ -109,6 +110,12 @@ public class IO {
 
     public static <T> T inputWithAutocomplete(String label,
             T[] entities,
+            Function<T, String> getSuggestionFn) {
+        return inputWithAutocomplete(label, entities, getSuggestionFn, (a) -> null);
+    }
+
+    public static <T> T inputWithAutocomplete(String label,
+            T[] entities,
             Function<T, String> getKeyFn,
             Function<T, String> getSuggestionFn) {
 
@@ -127,14 +134,19 @@ public class IO {
             var suggestion = getSuggestionFn.apply(entity);
             var searchValue = getKeyFn.apply(entity);
 
-            candidates.add(new Candidate(searchValue, searchValue, null, suggestion, null, null, true));
+            candidates.add(new Candidate(searchValue, searchValue, null, suggestion,
+                    null, null, false));
         }
 
         Completer completer = (reader, line, completions) -> completions.addAll(candidates);
 
+        DefaultParser parser = new DefaultParser();
+        parser.setEscapeChars(new char[0]);
+
         LineReader reader = LineReaderBuilder.builder()
                 .terminal(terminal)
                 .completer(completer)
+                .parser(parser)
                 .option(LineReader.Option.LIST_PACKED, true)
                 .build();
 
@@ -144,7 +156,6 @@ public class IO {
                     : Stream.of(entities).filter(e -> getKeyFn.apply(e).equals(output)).findFirst().orElseThrow();
         } catch (Exception e) {
             throw new RuntimeException("Error while getting info from input prompt: " + e.getMessage());
-
         }
 
     }

@@ -15,7 +15,7 @@ import jakarta.annotation.PostConstruct;
 public class ClientsOperationsSelector extends MenuSelector {
 
     @Autowired
-    private ObjectProvider<AddClientOperationContext> contextProvider;
+    private ObjectProvider<AddClientOperationContext> addClientOperationContextProvider;
 
     @Autowired
     private ObjectProvider<ViewClientsOperationExecutor> viewClientsOperationExecutorProvider;
@@ -23,7 +23,7 @@ public class ClientsOperationsSelector extends MenuSelector {
     @PostConstruct
     private void init() {
         executors.put(ClientsOperations.ADD_CLIENT,
-                new AddClientOperationOrchestrator(contextProvider.getObject()));
+                () -> new AddClientOperationOrchestrator(addClientOperationContextProvider.getObject()).run());
         executors.put(ClientsOperations.VIEW_CLIENTS,
                 viewClientsOperationExecutorProvider.getObject());
     }

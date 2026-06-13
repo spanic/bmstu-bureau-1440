@@ -5,12 +5,14 @@ import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.bmstu_bureau_1440.library.converters.GenreReadingConverter;
 import com.bmstu_bureau_1440.library.converters.GenreWritingConverter;
 
 @Configuration
 @EnableJdbcAuditing
+@EnableTransactionManagement
 public class JdbcConfig extends AbstractJdbcConfiguration {
 
     @Override

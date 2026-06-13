@@ -18,11 +18,12 @@ public class Book {
     private String title;
     private String author;
     private Genre genre;
-    private boolean available;
+    private boolean available = true;
 
     @Override
     public String toString() {
-        return String.format("%d. \"%s\", Автор: %s, Жанр: %s", id, title, author, genre);
+        return String.format("%d. \"%s\", Автор: %s, Жанр: %s | %s", id, title, author, genre,
+                available ? "Доступна" : "Выдана на руки");
     }
 
 }

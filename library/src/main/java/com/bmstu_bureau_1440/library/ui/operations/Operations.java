@@ -1,4 +1,4 @@
-package com.bmstu_bureau_1440.library.ui;
+package com.bmstu_bureau_1440.library.ui.operations;
 
 import org.jline.utils.AttributedStyle;
 
@@ -11,11 +11,11 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
-public enum MainOperations implements ListOption {
+public enum Operations implements ListOption {
 
-    LIST_BOOKS_OPERATIONS("Книги"),
-    LIST_CLIENTS_OPERATIONS("Читатели"),
-    OPERATIONS("Операции");
+    PROVIDE_BOOK("Выдать книгу"),
+    RETURN_BOOK("Вернуть книгу"),
+    VIEW_BOOKS_PROVIDED_TO_CLIENT("Посмотреть все книги, выданные читателю");
 
     @NonNull
     @Getter

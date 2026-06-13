@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.bmstu_bureau_1440.library.ui.books.BooksOperationsSelector;
 import com.bmstu_bureau_1440.library.ui.clients.ClientsOperationsSelector;
+import com.bmstu_bureau_1440.library.ui.operations.OperationsSelector;
 import com.bmstu_bureau_1440.shared.io.MenuSelector;
 
 import jakarta.annotation.PostConstruct;
@@ -21,10 +22,14 @@ public class LibraryConsoleUI extends MenuSelector implements CommandLineRunner 
     @Autowired
     private ClientsOperationsSelector clientsSelector;
 
+    @Autowired
+    private OperationsSelector operationsSelector;
+
     @PostConstruct
     private void init() {
         executors.put(MainOperations.LIST_BOOKS_OPERATIONS, booksSelector);
         executors.put(MainOperations.LIST_CLIENTS_OPERATIONS, clientsSelector);
+        executors.put(MainOperations.OPERATIONS, operationsSelector);
     }
 
     @Override
