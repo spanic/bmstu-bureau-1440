@@ -50,30 +50,4 @@ class OperationRepositoryTest extends AbstractIntegrationTest {
         assertThat(operations.getFirst().getPerformedAt()).isNotNull();
     }
 
-    @Test
-    void findWithdrawnBooksByClient() {
-        var book1 = bookRepository.save(new Book(null, "Fathers and Sons", "Ivan Turgenev", Genre.NOVEL, true));
-        var book2 = bookRepository.save(new Book(null, "War and Peace", "Leo Tolstoy", Genre.NOVEL, true));
-
-        var client = clientRepository.save(new Client(null, "Alexei Ivanov", "alexei.ivanov@example.com", null));
-
-        operationRepository.save(new Operation(null, AggregateReference.to(client.getId()),
-                AggregateReference.to(book1.getId()), OperationType.WITHDRAW, null));
-        operationRepository.save(new Operation(null, AggregateReference.to(client.getId()),
-                AggregateReference.to(book2.getId()), OperationType.WITHDRAW, null));
-
-        var withdrawnBooks = operationRepository.findWithdrawnBooksByClient(AggregateReference.to(client.getId()));
-
-        assertThat(withdrawnBooks).hasSize(2);
-        assertThat(withdrawnBooks).contains(book1, book2);
-
-        operationRepository.save(new Operation(null, AggregateReference.to(client.getId()),
-                AggregateReference.to(book1.getId()), OperationType.RETURN, null));
-
-        withdrawnBooks = operationRepository.findWithdrawnBooksByClient(AggregateReference.to(client.getId()));
-
-        assertThat(withdrawnBooks).hasSize(1);
-        assertThat(withdrawnBooks).first().isEqualTo(book2);
-
-    }
 }

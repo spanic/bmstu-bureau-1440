@@ -31,3 +31,14 @@ CREATE TABLE IF NOT EXISTS operations (
     performed_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+
+CREATE INDEX idx_operations_book_id ON operations (book_id);
+CREATE INDEX idx_operations_client_book ON operations (client_id, book_id);
+
+
+CREATE INDEX idx_operations_withdraw_book_id
+    ON operations (book_id)
+    WHERE type = 'WITHDRAW';
+
+
+CREATE INDEX idx_books_available ON books (id) WHERE available = TRUE;

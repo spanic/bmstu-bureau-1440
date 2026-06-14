@@ -1,4 +1,4 @@
-package com.bmstu_bureau_1440.library.ui;
+package com.bmstu_bureau_1440.library.ui.statistics;
 
 import org.jline.utils.AttributedStyle;
 
@@ -11,12 +11,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
-public enum MainOperations implements ListOption {
+public enum StatisticsOperations implements ListOption {
 
-    LIST_BOOKS_OPERATIONS("Книги"),
-    LIST_CLIENTS_OPERATIONS("Читатели"),
-    OPERATIONS("Операции"),
-    STATISTICS("Статистика");
+    SHOW_TRENDING_BOOKS("Показать популярные книги");
 
     @NonNull
     @Getter

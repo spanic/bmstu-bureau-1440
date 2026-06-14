@@ -7,15 +7,15 @@ import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Component;
 
 import com.bmstu_bureau_1440.library.models.Client;
+import com.bmstu_bureau_1440.library.repositories.BookRepository;
 import com.bmstu_bureau_1440.library.repositories.ClientRepository;
-import com.bmstu_bureau_1440.library.repositories.OperationRepository;
 import com.bmstu_bureau_1440.shared.io.IO;
 
 @Component
 public class ViewWithdrawnBooksOperationExecutor implements Runnable {
 
     @Autowired
-    private OperationRepository operationRepository;
+    private BookRepository bookRepository;
 
     @Autowired
     private ClientRepository clientRepository;
@@ -33,7 +33,7 @@ public class ViewWithdrawnBooksOperationExecutor implements Runnable {
             return;
         }
 
-        var withdrawnBooks = operationRepository
+        var withdrawnBooks = bookRepository
                 .findWithdrawnBooksByClient(AggregateReference.to(selectedClient.getId()));
 
         if (withdrawnBooks.isEmpty()) {

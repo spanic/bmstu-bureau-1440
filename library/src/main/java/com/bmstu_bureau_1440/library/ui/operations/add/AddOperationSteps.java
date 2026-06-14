@@ -58,7 +58,7 @@ public class AddOperationSteps {
             if (context.getOperation().getType() == OperationType.WITHDRAW) {
                 books = context.getBookRepository().findByAvailableTrue().toArray(Book[]::new);
             } else {
-                books = context.getOperationRepository()
+                books = context.getBookRepository()
                         .findWithdrawnBooksByClient(AggregateReference.to(context.getClient().getId()))
                         .toArray(Book[]::new);
             }
