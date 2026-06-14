@@ -1,10 +1,14 @@
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
+
+import com.bmstu_bureau_1440.shared.io.IO;
+import com.bmstu_bureau_1440.shared.io.MenuSelector;
+
 import animals.Animal;
 import animals.Region;
 import animals.impl.Parrot;
 import animals.impl.Shark;
 import animals.impl.Tiger;
-import com.bmstu_bureau_1440.shared.io.IO;
-import com.bmstu_bureau_1440.shared.io.IOperation;
 import facilities.Home;
 import io.Operation;
 import reports.ReportGenerator;
@@ -15,120 +19,96 @@ import staff.impl.Cleaner;
 import staff.impl.Doctor;
 import staff.impl.ZooKeeper;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static com.bmstu_bureau_1440.shared.io.Operation.EXIT;
-
 public class Main {
 
     public static void main(String[] args) {
+        new Main.Zoo().run();
+    }
 
-        // Добавляем животных в зоопарк
-        Animal tiger = new Tiger("Гоша", (short) 10, new Home(), new Region[]{Region.AFRICA}, (short) 10);
-        Animal parrot = new Parrot("Кеша", (short) 2, new Home(), new Region[]{Region.ASIA, Region.AUSTRALIA}, (short) 2);
-        Animal shark = new Shark("Луиза", (short) 1, new Home(), new Region[]{Region.PACIFIC_OCEAN}, (short) 10);
+    private final static class Zoo extends MenuSelector {
 
-        var animals = new Animal[]{tiger, parrot, shark};
+        {
+            Animal tiger = new Tiger("Гоша", (short) 10, new Home(), new Region[] { Region.AFRICA }, (short) 10);
+            Animal parrot = new Parrot("Кеша", (short) 2, new Home(), new Region[] { Region.ASIA, Region.AUSTRALIA },
+                    (short) 2);
+            Animal shark = new Shark("Луиза", (short) 1, new Home(), new Region[] { Region.PACIFIC_OCEAN }, (short) 10);
 
-        // Устанавливаем начальное состояние животным
-        tiger.setHealthy(false); // тигр болеет
-        shark.setLastFeedingDateTime(LocalDateTime.now().minusDays(1)); // акула голодная
-        parrot.getHome().setClean(false); // у попугая в вольере нужна уборка
+            // Setting inittial animals' conditions
+            tiger.setHealthy(false);
+            shark.setLastFeedingDateTime(LocalDateTime.now().minusDays(1));
+            parrot.getHome().setClean(false);
 
-        // Добавляем персонал
-        var cleaner = new Cleaner();
-        var zookeeper = new ZooKeeper();
-        var doctor = new Doctor();
+            // Adding animals
+            var animals = new Animal[] { tiger, parrot, shark };
 
-        // Настраиваем модуль отчета
-        var reportGenerator = new ReportGenerator();
+            // Adding staff
+            var cleaner = new Cleaner();
+            var zookeeper = new ZooKeeper();
+            var doctor = new Doctor();
 
-        while (true) {
+            var reportGenerator = new ReportGenerator();
 
-            try {
+            executors.put(Operation.SHOW_ANIMALS, () -> System.out.println("В зоопарке живут: "
+                    + String.join(", ", Stream.of(animals).map(Animal::toString).toArray(String[]::new))));
 
-                List<IOperation> operations = new ArrayList<>(List.of(Operation.values()));
-                operations.add(EXIT);
+            executors.put(Operation.SHOW_ANIMALS_NEEDS_CLEANUP, () -> {
+                reportGenerator.setInfoProvider(new NeedsCleanupAnimalsInfoProvider(animals));
+                reportGenerator.generateReport();
+            });
 
-                var option = IO.displayMenu(operations.toArray(new IOperation[0]));
+            executors.put(Operation.SHOW_HUNGRY_ANIMALS, () -> {
+                reportGenerator.setInfoProvider(new HungryAnimalsInfoProvider(animals));
+                reportGenerator.generateReport();
+            });
 
-                if (option.equals(EXIT.getOperation())) {
+            executors.put(Operation.SHOW_SICK_ANIMALS, () -> {
+                reportGenerator.setInfoProvider(new SickAnimalsInfoProvider(animals));
+                reportGenerator.generateReport();
+            });
 
-                    break;
+            executors.put(Operation.FEED_ANIMAL, () -> {
+                var selectedAnimal = IO.inputWithAutocomplete(
+                        "Выберите животное, которое нужно покормить:",
+                        animals,
+                        Animal::getId,
+                        (animal) -> String.format("%s, %s", animal.toString(),
+                                animal.isHungry() ? "Голодное" : "Сытое"));
 
-                } else if (Operation.SHOW_ANIMALS.getOperation().equals(option)) {
+                zookeeper.feed(selectedAnimal);
 
-                    System.out.println("В зоопарке живут: "
-                            + String.join(", ", Stream.of(animals).map(Animal::toString).toArray(String[]::new)));
+                IO.displaySuccess(String.format("Животное %s накормлено", selectedAnimal));
+            });
 
-                } else if (Operation.SHOW_ANIMALS_NEEDS_CLEANUP.getOperation().equals(option)) {
+            executors.put(Operation.HEAL_ANIMAL, () -> {
+                var selectedAnimal = IO.inputWithAutocomplete(
+                        "Выберите животное, которое нужно вылечить:",
+                        animals,
+                        Animal::getId,
+                        (animal) -> String.format("%s, %s", animal.toString(),
+                                animal.isHealthy() ? "Здоровое" : "Больное"));
 
-                    reportGenerator.setInfoProvider(new NeedsCleanupAnimalsInfoProvider(animals));
-                    reportGenerator.generateReport();
+                doctor.heal(selectedAnimal);
 
-                } else if (Operation.SHOW_HUNGRY_ANIMALS.getOperation().equals(option)) {
+                IO.displaySuccess(String.format("Животное %s вылечено", selectedAnimal));
+            });
 
-                    reportGenerator.setInfoProvider(new HungryAnimalsInfoProvider(animals));
-                    reportGenerator.generateReport();
+            executors.put(Operation.CLEAN_ANIMALS_AREA, () -> {
+                var selectedAnimal = IO.inputWithAutocomplete(
+                        "Выберите животное, у которого нужно провести уборку:",
+                        animals,
+                        Animal::getId,
+                        (animal) -> String.format("%s, %s", animal.toString(),
+                                animal.getHome().isClean() ? "Убрано" : "Нужна уборка"));
 
-                } else if (Operation.SHOW_SICK_ANIMALS.getOperation().equals(option)) {
+                cleaner.clean(selectedAnimal);
 
-                    reportGenerator.setInfoProvider(new SickAnimalsInfoProvider(animals));
-                    reportGenerator.generateReport();
+                IO.displaySuccess(String.format("У животного %s была проведена уборка", selectedAnimal));
+            });
+        }
 
-                } else if (Operation.FEED_ANIMAL.getOperation().equals(option)) {
-
-                    var selectedAnimalId = IO.inputWithAutocomplete(
-                            "Выберите животное, которое нужно покормить:",
-                            animals,
-                            Animal::getId,
-                            (animal) -> String.format("%s, %s", animal.toString(), animal.isHungry() ? "Голодное" : "Сытое")
-                    );
-                    var selectedAnimal = Stream.of(animals).filter(animal -> animal.getId().equals(selectedAnimalId)).findFirst();
-
-                    selectedAnimal.ifPresent(animal -> {
-                        zookeeper.feed(animal);
-                        IO.displaySuccess(String.format("Животное %s накормлено", animal));
-                    });
-
-                } else if (Operation.HEAL_ANIMAL.getOperation().equals(option)) {
-
-                    var selectedAnimalId = IO.inputWithAutocomplete(
-                            "Выберите животное, которое нужно вылечить:",
-                            animals,
-                            Animal::getId,
-                            (animal) -> String.format("%s, %s", animal.toString(), animal.isHealthy() ? "Здоровое" : "Больное")
-                    );
-                    var selectedAnimal = Stream.of(animals).filter(animal -> animal.getId().equals(selectedAnimalId)).findFirst();
-
-                    selectedAnimal.ifPresent(animal -> {
-                        doctor.heal(animal);
-                        IO.displaySuccess(String.format("Животное %s вылечено", animal));
-                    });
-
-                } else if (Operation.CLEAN_ANIMALS_AREA.getOperation().equals(option)) {
-
-                    var selectedAnimalId = IO.inputWithAutocomplete(
-                            "Выберите животное, у которого нужно провести уборку:",
-                            animals,
-                            Animal::getId,
-                            (animal) -> String.format("%s, %s", animal.toString(), animal.getHome().isClean() ? "Убрано" : "Нужна уборка")
-                    );
-                    var selectedAnimal = Stream.of(animals).filter(animal -> animal.getId().equals(selectedAnimalId)).findFirst();
-
-                    selectedAnimal.ifPresent(animal -> {
-                        cleaner.clean(animal);
-                        IO.displaySuccess(String.format("У животного %s была проведена уборка", animal));
-                    });
-
-                }
-            } catch (Exception e) {
-                IO.displayError(e);
-            }
-
+        @Override
+        protected boolean loop() {
+            return true;
         }
 
     }

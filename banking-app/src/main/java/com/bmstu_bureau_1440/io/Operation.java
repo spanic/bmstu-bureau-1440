@@ -1,15 +1,17 @@
 package com.bmstu_bureau_1440.io;
 
-import com.bmstu_bureau_1440.shared.io.IOperation;
+import org.jline.utils.AttributedStyle;
+
+import com.bmstu_bureau_1440.shared.io.ListOption;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.jline.utils.AttributedStyle;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
-public enum Operation implements IOperation {
+public enum Operation implements ListOption {
 
     DEPOSIT("deposit", "Deposit"),
     WITHDRAW("withdraw", "Withdraw"),
@@ -24,11 +26,11 @@ public enum Operation implements IOperation {
 
     @NonNull
     @Getter
-    private final String operation;
+    private final String key;
 
     @NonNull
     @Getter
-    private final String text;
+    private final String name;
 
     @Getter
     private AttributedStyle style;

@@ -10,12 +10,11 @@ import lombok.NonNull;
 @EqualsAndHashCode(callSuper = true)
 public class Tiger extends Animal implements MakesSounds {
 
-
     public Tiger(@NonNull String name,
-                 @NonNull short age,
-                 @NonNull Home home,
-                 @NonNull Region[] origin,
-                 @NonNull short feedingIntervalHrs) {
+            @NonNull Short age,
+            @NonNull Home home,
+            @NonNull Region[] origin,
+            @NonNull Short feedingIntervalHrs) {
         super(name, age, home, origin, feedingIntervalHrs);
     }
 

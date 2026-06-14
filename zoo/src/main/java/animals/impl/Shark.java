@@ -8,10 +8,10 @@ import lombok.NonNull;
 public class Shark extends Animal {
 
     public Shark(@NonNull String name,
-                 @NonNull short age,
-                 @NonNull Home home,
-                 @NonNull Region[] origin,
-                 @NonNull short feedingIntervalHrs) {
+            @NonNull Short age,
+            @NonNull Home home,
+            @NonNull Region[] origin,
+            @NonNull Short feedingIntervalHrs) {
         super(name, age, home, origin, feedingIntervalHrs);
     }
 
